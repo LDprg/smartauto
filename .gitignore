@@ -7,6 +7,7 @@ Cargo.lock
 
 # Yew
 dist
+debug
 
 # Wasm
 *.wasm
