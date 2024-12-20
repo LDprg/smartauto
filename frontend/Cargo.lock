@@ -1009,14 +1009,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust-pdk-template"
-version = "0.1.0"
-dependencies = [
- "extism-pdk",
- "serde",
-]
-
-[[package]]
 name = "rustc-demangle"
 version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1145,6 +1137,14 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "test_plugin"
+version = "0.1.0"
+dependencies = [
+ "extism-pdk",
+ "serde",
 ]
 
 [[package]]

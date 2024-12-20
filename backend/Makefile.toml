@@ -1,0 +1,19 @@
+[config]
+default_to_workspace = false
+
+[tasks.run]
+dependencies = [
+    "default",
+    "copy-wasm",   
+    "run-only"
+]
+
+[tasks.run-only]
+command = "cargo"
+args = ["run"]
+
+[tasks.copy-wasm]
+description = "Copy WASM files to the output directory"
+script = [
+    "cp target/wasm32-unknown-unknown/debug/*.wasm target/debug/"
+]
