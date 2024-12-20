@@ -1,4 +1,5 @@
 # smartauto
+[![Rust](https://github.com/LDprg/smartauto/actions/workflows/rust.yml/badge.svg)](https://github.com/LDprg/smartauto/actions/workflows/rust.yml)
 
 # Dependencies
  - Yew
