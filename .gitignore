@@ -1,5 +1,12 @@
+# Editor
 .vscode
 
+# Rust
 target
+Cargo.lock
+
+# Yew
 dist
-pkg
+
+# Wasm
+*.wasm
