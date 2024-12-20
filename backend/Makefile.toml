@@ -5,7 +5,7 @@ default_to_workspace = false
 dependencies = [
     "format",
     "build",
-    "copy-wasm",   
+    "copy-wasm",
     "run-only"
 ]
 
