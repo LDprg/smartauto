@@ -1,1 +1,5 @@
 # smartauto
+
+# Dependencies
+ - Yew
+ - Extism 
