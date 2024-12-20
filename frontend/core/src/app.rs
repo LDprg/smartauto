@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::*;
 use yew::prelude::*;
 
-#[wasm_bindgen(module = "/interface.js")]
+#[wasm_bindgen(module = "/js/interface.js")]
 extern "C" {
     fn runWasm();
 }
