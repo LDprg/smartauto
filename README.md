@@ -4,9 +4,11 @@
 
 # Dependencies
 Here a list of dependencies that might take more effort to install:
+ - [https://www.rust-lang.org/tools/install](Rust)
  - [https://yew.rs/docs/next/getting-started/introduction](Yew)
  - [https://extism.org/docs/install/](Extism)
  - [https://github.com/sagiegurari/cargo-make#installation](cargo-make)
+ - [https://pre-commit.com/#install](pre-commit)
 
 # Building
 Use `cargo make` in workspace folder for building each:
@@ -18,6 +20,8 @@ Use `cargo make run` in workspace folder for building each:
  - backend
  - frontend (live reload)
 Use `cargo make clean` to clean the project (or workspace with all sub projects).
+
+Don't forget to install pre-commit with `pre-commit install`!
 
 # Note
 Currently this project is pre alpha and native linux only.
