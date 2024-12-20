@@ -8,6 +8,7 @@ export async function runWasm() {
         { useWasi: true }
     );
 
-    let out = await plugin.call("greet", "Yellow, World!");
+    let out = await plugin.call("getHtml", "Yellow, World!");
     console.log(out.text());
+    return String(out.text());
 };
