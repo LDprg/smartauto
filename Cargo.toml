@@ -1,9 +1,6 @@
-# This is primary for precommit
 [workspace]
 resolver = "2"
 members = [
     "backend/core",
     "backend/plugins/*",
 ]
-# Prevent nested workspace errors
-exclude = ["backend"]

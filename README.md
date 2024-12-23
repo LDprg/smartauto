@@ -4,12 +4,11 @@
 
 # Dependencies
 Here a list of dependencies that might take more effort to install:
- - [https://www.rust-lang.org/tools/install](Rust)
- - [https://yew.rs/docs/next/getting-started/introduction](Yew)
- - [https://extism.org/docs/install/](Extism)
- - [https://github.com/sagiegurari/cargo-make#installation](cargo-make)
  - [https://pre-commit.com/#install](pre-commit)
+ - [https://www.rust-lang.org/tools/install](Rust)
+ - NodeJs
  - pnpm
+ - Svelte
 
 # Building
 Use `cargo make` to build the backend.

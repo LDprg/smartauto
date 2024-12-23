@@ -1,7 +1,0 @@
-[tasks.build]
-command = "cargo"
-args = ["build", "--target", "wasm32-unknown-unknown"]
-
-[tasks.test]
-command = "echo"
-args = ["skipped"]
