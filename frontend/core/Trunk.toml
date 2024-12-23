@@ -1,8 +1,0 @@
-[watch]
-watch = [".."]
-ignore = ["wasm"]
-
-[[hooks]]
-stage = "pre_build"
-command = "sh"
-command_arguments = ["-c", "rm -r wasm && mkdir -p wasm && cd .. && cargo make build && cd core && cp ../target/wasm32-unknown-unknown/debug/*.wasm wasm/"]

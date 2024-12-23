@@ -9,6 +9,7 @@ Here a list of dependencies that might take more effort to install:
  - [https://extism.org/docs/install/](Extism)
  - [https://github.com/sagiegurari/cargo-make#installation](cargo-make)
  - [https://pre-commit.com/#install](pre-commit)
+ - pnpm
 
 # Building
 Use `cargo make` in workspace folder for building each:
