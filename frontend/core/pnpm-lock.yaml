@@ -46,8 +46,8 @@ importers:
         specifier: ^15.0.0
         version: 15.14.0
       mdsvex:
-        specifier: ^0.11.2
-        version: 0.11.2(svelte@5.15.0)
+        specifier: ^0.12.0
+        version: 0.12.3(svelte@5.15.0)
       prettier:
         specifier: ^3.3.2
         version: 3.4.2
@@ -1060,8 +1060,8 @@ packages:
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
 
-  mdsvex@0.11.2:
-    resolution: {integrity: sha512-Y4ab+vLvTJS88196Scb/RFNaHMHVSWw6CwfsgWIQP8f42D57iDII0/qABSu530V4pkv8s6T2nx3ds0MC1VwFLA==}
+  mdsvex@0.12.3:
+    resolution: {integrity: sha512-C/uIJamjNo5PHHnR3JHqsBPoLcfUBpzRmAEB6FLMXI/s7XHOceswjDMKqSPEW2WHmYpKm0taZ3U20GSyhMridA==}
     peerDependencies:
       svelte: ^3.56.0 || ^4.0.0 || ^5.0.0-next.120
 
@@ -2568,7 +2568,7 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  mdsvex@0.11.2(svelte@5.15.0):
+  mdsvex@0.12.3(svelte@5.15.0):
     dependencies:
       '@types/unist': 2.0.11
       prism-svelte: 0.4.7
