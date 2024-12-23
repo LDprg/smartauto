@@ -12,15 +12,14 @@ Here a list of dependencies that might take more effort to install:
  - pnpm
 
 # Building
-Use `cargo make` in workspace folder for building each:
- - backend
- - frontend
+Use `cargo make` to build the backend.
+Use `pnpm build` to build the frontend.
 
 # Developing
-Use `cargo make run` in workspace folder for building each:
- - backend
- - frontend (live reload)
-Use `cargo make clean` to clean the project (or workspace with all sub projects).
+Use `cargo make run` to run the backend.
+Use `cargo make clean` to clean the project.
+
+Use `pnpm dev -open`to run the frontend
 
 Don't forget to install pre-commit with `pre-commit install`!
 
