@@ -16,6 +16,7 @@ repos:
       - id: destroyed-symlinks
       - id: detect-private-key
       - id: end-of-file-fixer
+        exclude: ^frontend/core/src/lib/gen/
       - id: fix-byte-order-marker
       - id: mixed-line-ending
       - id: trailing-whitespace
@@ -38,8 +39,8 @@ repos:
     hooks:
       - id: buf-format
       - id: buf-lint
-      # - id: buf-breaking # detect breaking changes in protobuf
-      # - id: buf-generate
+      # - id: buf-breaking # detect breaking changes in protobuf, not needed for now
+      - id: buf-generate
   - repo: local
     hooks:
       - id: pnpm-fmt

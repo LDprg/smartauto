@@ -27,13 +27,16 @@ impl GreeterService for MyGreeter {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "[::1]:50051".parse().unwrap();
+    let addr = "127.0.0.1:3000".parse().unwrap();
     let greeter = MyGreeter::default();
+
+    let greeter = GreeterServiceServer::new(greeter);
 
     println!("GreeterServer listening on {}", addr);
 
     Server::builder()
-        .add_service(GreeterServiceServer::new(greeter))
+        .accept_http1(true)
+        .add_service(tonic_web::enable(greeter))
         .serve(addr)
         .await?;
 

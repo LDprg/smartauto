@@ -8,6 +8,7 @@ Here a list of dependencies that might take more effort to install:
  - [https://www.rust-lang.org/tools/install](Rust)
  - NodeJs
  - pnpm
+ - [https://github.com/bufbuild/protobuf-es](protobuf-es)
  - Svelte
 
 # Building
