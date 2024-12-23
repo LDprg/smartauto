@@ -5,9 +5,8 @@
 target
 Cargo.lock
 
-# Yew
-dist
-debug
+# Scylla
+/scylla-*
 
 # Wasm
 *.wasm
