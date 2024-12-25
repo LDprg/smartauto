@@ -11,6 +11,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
+    - uses: bufbuild/buf-action@v1
+      with:
+        setup_only: true
     - uses: pnpm/action-setup@v4
       name: Install pnpm
       with:

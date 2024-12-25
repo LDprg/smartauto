@@ -16,5 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - uses: bufbuild/buf-action@v1
+      with:
+        setup_only: true
     - name: Build
       run: cargo build --verbose
