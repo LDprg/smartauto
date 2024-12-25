@@ -26,4 +26,6 @@ jobs:
         node-version: 20
     - name: Install dependencies
       run: pnpm install -C frontend/core
+    - name: install protobuf-es
+      run: pnpm add -g @bufbuild/protoc-gen-es
     - uses: pre-commit/action@v3.0.1
