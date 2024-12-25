@@ -15,6 +15,9 @@ export default ts.config(
   prettier,
   ...svelte.configs['flat/prettier'],
   {
+    ignores: ['src/lib/gen'],
+  },
+  {
     languageOptions: {
       globals: {
         ...globals.browser,
