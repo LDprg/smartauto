@@ -24,8 +24,18 @@
 
     console.log(resp.message);
   }
-
   callSayHello();
+
+  // let MyComponent = $state(null);
+
+  // async function loadPlugin() {
+  //   const module = await import('http://localhost:5174/src/App.svelte');
+  //   MyComponent = module.App;
+  //   console.log('loaded');
+  // }
+  // loadPlugin();
 </script>
 
 {@render children()}
+
+<!-- <MyComponent /> -->
