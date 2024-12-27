@@ -27,7 +27,15 @@
 	} catch (e) {
 		console.log(e);
 	}
+
+	async function loadPlugin() {
+		const mnt = await import('http://localhost:5173/src/main.ts');
+		mnt();
+	}
+	loadPlugin();
 </script>
 
 <h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+
+<div id="app"></div>

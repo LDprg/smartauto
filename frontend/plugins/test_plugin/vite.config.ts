@@ -10,5 +10,6 @@ export default defineConfig({
 				entryFileNames: 'index.js',
 			},
 		},
+		emitAssets: false,
 	},
 });
