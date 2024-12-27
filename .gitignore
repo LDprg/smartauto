@@ -5,6 +5,9 @@
 target
 Cargo.lock
 
+# NodeJS
+node_modules
+
 # Scylla
 /scylla-*
 

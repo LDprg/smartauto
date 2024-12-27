@@ -5,4 +5,3 @@ yarn.lock
 
 # Protobuf
 src/gen/
-src/lib/gen/helloworld/v1/helloworld_pb.ts
