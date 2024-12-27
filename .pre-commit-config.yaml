@@ -16,7 +16,7 @@ repos:
       - id: destroyed-symlinks
       - id: detect-private-key
       - id: end-of-file-fixer
-        exclude: ^frontend/core/src/lib/gen/
+        exclude: ^frontend/core/src/gen/
       - id: fix-byte-order-marker
       - id: mixed-line-ending
       - id: trailing-whitespace
@@ -46,12 +46,12 @@ repos:
       - id: pnpm-fmt
         name: format pnpm
         language: system
-        files: package.json
+        files: pnpm-workspace.yaml
         pass_filenames: false
-        entry: pnpm run -C frontend/core/ format
+        entry: pnpm -r run format
       - id: pnpm-lint
         name: lint pnpm
         language: system
-        files: package.json
+        files: pnpm-workspace.yaml
         pass_filenames: false
-        entry: pnpm run -C frontend/core/ lint
+        entry: pnpm -r run lint

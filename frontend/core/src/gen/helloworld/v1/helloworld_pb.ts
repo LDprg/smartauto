@@ -68,3 +68,4 @@ export const GreeterService: GenService<{
   },
 }> = /*@__PURE__*/
   serviceDesc(file_helloworld_v1_helloworld, 0);
+
