@@ -3,6 +3,6 @@ clean: true
 plugins:
   - local: protoc-gen-es
     opt: target=ts
-    out: src/lib/gen
+    out: src/gen
 inputs:
   - directory: ../../proto

@@ -2,22 +2,25 @@
 // @generated from file helloworld/v1/helloworld.proto (package helloworld.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv1";
-import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv1";
-import type { Message } from "@bufbuild/protobuf";
+import type { GenFile, GenMessage, GenService } from '@bufbuild/protobuf/codegenv1';
+import { fileDesc, messageDesc, serviceDesc } from '@bufbuild/protobuf/codegenv1';
+import type { Message } from '@bufbuild/protobuf';
 
 /**
  * Describes the file helloworld/v1/helloworld.proto.
  */
-export const file_helloworld_v1_helloworld: GenFile = /*@__PURE__*/
-  fileDesc("Ch5oZWxsb3dvcmxkL3YxL2hlbGxvd29ybGQucHJvdG8SDWhlbGxvd29ybGQudjEiHwoPU2F5SGVsbG9SZXF1ZXN0EgwKBG5hbWUYASABKAkiIwoQU2F5SGVsbG9SZXNwb25zZRIPCgdtZXNzYWdlGAEgASgJMl8KDkdyZWV0ZXJTZXJ2aWNlEk0KCFNheUhlbGxvEh4uaGVsbG93b3JsZC52MS5TYXlIZWxsb1JlcXVlc3QaHy5oZWxsb3dvcmxkLnYxLlNheUhlbGxvUmVzcG9uc2UiAGIGcHJvdG8z");
+export const file_helloworld_v1_helloworld: GenFile =
+  /*@__PURE__*/
+  fileDesc(
+    'Ch5oZWxsb3dvcmxkL3YxL2hlbGxvd29ybGQucHJvdG8SDWhlbGxvd29ybGQudjEiHwoPU2F5SGVsbG9SZXF1ZXN0EgwKBG5hbWUYASABKAkiIwoQU2F5SGVsbG9SZXNwb25zZRIPCgdtZXNzYWdlGAEgASgJMl8KDkdyZWV0ZXJTZXJ2aWNlEk0KCFNheUhlbGxvEh4uaGVsbG93b3JsZC52MS5TYXlIZWxsb1JlcXVlc3QaHy5oZWxsb3dvcmxkLnYxLlNheUhlbGxvUmVzcG9uc2UiAGIGcHJvdG8z'
+  );
 
 /**
  * The request message containing the user's name.
  *
  * @generated from message helloworld.v1.SayHelloRequest
  */
-export type SayHelloRequest = Message<"helloworld.v1.SayHelloRequest"> & {
+export type SayHelloRequest = Message<'helloworld.v1.SayHelloRequest'> & {
   /**
    * @generated from field: string name = 1;
    */
@@ -28,7 +31,8 @@ export type SayHelloRequest = Message<"helloworld.v1.SayHelloRequest"> & {
  * Describes the message helloworld.v1.SayHelloRequest.
  * Use `create(SayHelloRequestSchema)` to create a new message.
  */
-export const SayHelloRequestSchema: GenMessage<SayHelloRequest> = /*@__PURE__*/
+export const SayHelloRequestSchema: GenMessage<SayHelloRequest> =
+  /*@__PURE__*/
   messageDesc(file_helloworld_v1_helloworld, 0);
 
 /**
@@ -36,7 +40,7 @@ export const SayHelloRequestSchema: GenMessage<SayHelloRequest> = /*@__PURE__*/
  *
  * @generated from message helloworld.v1.SayHelloResponse
  */
-export type SayHelloResponse = Message<"helloworld.v1.SayHelloResponse"> & {
+export type SayHelloResponse = Message<'helloworld.v1.SayHelloResponse'> & {
   /**
    * @generated from field: string message = 1;
    */
@@ -47,7 +51,8 @@ export type SayHelloResponse = Message<"helloworld.v1.SayHelloResponse"> & {
  * Describes the message helloworld.v1.SayHelloResponse.
  * Use `create(SayHelloResponseSchema)` to create a new message.
  */
-export const SayHelloResponseSchema: GenMessage<SayHelloResponse> = /*@__PURE__*/
+export const SayHelloResponseSchema: GenMessage<SayHelloResponse> =
+  /*@__PURE__*/
   messageDesc(file_helloworld_v1_helloworld, 1);
 
 /**
@@ -62,10 +67,8 @@ export const GreeterService: GenService<{
    * @generated from rpc helloworld.v1.GreeterService.SayHello
    */
   sayHello: {
-    methodKind: "unary";
+    methodKind: 'unary';
     input: typeof SayHelloRequestSchema;
     output: typeof SayHelloResponseSchema;
-  },
-}> = /*@__PURE__*/
-  serviceDesc(file_helloworld_v1_helloworld, 0);
-
+  };
+}> = /*@__PURE__*/ serviceDesc(file_helloworld_v1_helloworld, 0);
