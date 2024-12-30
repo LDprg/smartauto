@@ -1,5 +1,6 @@
 # smartauto
 [![Rust](https://github.com/LDprg/smartauto/actions/workflows/rust.yml/badge.svg)](https://github.com/LDprg/smartauto/actions/workflows/rust.yml)
+[![Typescript](https://github.com/LDprg/smartauto/actions/workflows/typescript.yml/badge.svg)](https://github.com/LDprg/smartauto/actions/workflows/typescript.yml)
 [![pre-commit](https://github.com/LDprg/smartauto/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/LDprg/smartauto/actions/workflows/pre-commit.yml)
 
 # Dependencies
