@@ -1,31 +1,29 @@
 name: pre-commit
-
 on:
   pull_request:
   push:
     branches: [main]
-
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
-    - uses: arduino/setup-protoc@v3
-    - uses: bufbuild/buf-action@v1
-      with:
-        setup_only: true
-    - uses: pnpm/action-setup@v4
-      name: Install pnpm
-      with:
-        version: 9
-        run_install: false
-    - name: Install Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-    - name: Install dependencies
-      run: pnpm install -C frontend/core
-    - name: install protobuf-es
-      run: pnpm add -g @bufbuild/protoc-gen-es
-    - uses: pre-commit/action@v3.0.1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - uses: arduino/setup-protoc@v3
+      - uses: bufbuild/buf-action@v1
+        with:
+          setup_only: true
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 9
+          run_install: false
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: pnpm install -C frontend/core
+      - name: install protobuf-es
+        run: pnpm add -g @bufbuild/protoc-gen-es
+      - uses: pre-commit/action@v3.0.1
