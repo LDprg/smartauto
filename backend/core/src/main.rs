@@ -1,3 +1,4 @@
+use tonic::metadata::MetadataValue;
 use tonic::{Request, Response, Status, transport::Server};
 
 use smartauto::greeter_service_server::{GreeterService, GreeterServiceServer};
@@ -36,7 +37,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .build_v1alpha()?;
 
     let greeter = MyGreeter::default();
-    let greeter = GreeterServiceServer::new(greeter);
+    let greeter = GreeterServiceServer::with_interceptor(greeter, check_auth);
 
     println!("GreeterServer listening on {}", addr);
 
@@ -48,4 +49,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     Ok(())
+}
+
+fn check_auth(req: Request<()>) -> Result<Request<()>, Status> {
+    let token: MetadataValue<_> = "ABC".parse().unwrap();
+
+    match req.metadata().get("authorization") {
+        Some(t) if token == t => Ok(req),
+        _ => Err(Status::unauthenticated("No valid auth token")),
+    }
 }
