@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+package smartauto.v1;
+
+service AuthService {}

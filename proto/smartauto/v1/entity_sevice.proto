@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package smartauto.v1;
+
+service EntityService {
+  rpc CreateEntity(CreateEntityRequest) returns (CreateEntityResponse);
+}
+
+message CreateEntityRequest {}
+
+message CreateEntityResponse {}

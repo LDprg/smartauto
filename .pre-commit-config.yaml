@@ -16,7 +16,7 @@ repos:
       - id: destroyed-symlinks
       - id: detect-private-key
       - id: end-of-file-fixer
-        exclude: ^frontend/core/src/gen/
+        exclude: .*_pb\..*
       - id: fix-byte-order-marker
       - id: mixed-line-ending
       - id: trailing-whitespace

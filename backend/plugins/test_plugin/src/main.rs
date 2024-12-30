@@ -2,7 +2,7 @@ use hello_world::SayHelloRequest;
 use hello_world::greeter_service_client::GreeterServiceClient;
 
 pub mod hello_world {
-    tonic::include_proto!("helloworld.v1");
+    tonic::include_proto!("smartauto.v1");
 }
 
 #[tokio::main]
