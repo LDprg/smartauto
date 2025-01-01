@@ -1,33 +1,10 @@
-use tonic::metadata::MetadataValue;
-use tonic::{Request, Response, Status, transport::Server};
+use tonic::codec::CompressionEncoding;
+use tonic::transport::Server;
 
-use smartauto::greeter_service_server::{GreeterService, GreeterServiceServer};
-use smartauto::{SayHelloRequest, SayHelloResponse};
+mod services;
+mod smartauto;
 
-pub mod smartauto {
-    tonic::include_proto!("smartauto.v1");
-
-    pub(crate) const FILE_DESCRIPTOR_SET: &[u8] =
-        tonic::include_file_descriptor_set!("smartauto_v1_descriptor");
-}
-
-#[derive(Default)]
-pub struct MyGreeter {}
-
-#[tonic::async_trait]
-impl GreeterService for MyGreeter {
-    async fn say_hello(
-        &self,
-        request: Request<SayHelloRequest>,
-    ) -> Result<Response<SayHelloResponse>, Status> {
-        println!("Got a request from {:?}", request.remote_addr());
-
-        let response = smartauto::SayHelloResponse {
-            message: format!("Hello {}!", request.into_inner().name),
-        };
-        Ok(Response::new(response))
-    }
-}
+use services::*;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -36,26 +13,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .register_encoded_file_descriptor_set(smartauto::FILE_DESCRIPTOR_SET)
         .build_v1alpha()?;
 
-    let greeter = MyGreeter::default();
-    let greeter = GreeterServiceServer::with_interceptor(greeter, check_auth);
+    let greeter = greeter::GreeterImpl::default();
+    let greeter = greeter::GreeterServiceServer::new(greeter)
+        .send_compressed(CompressionEncoding::Zstd)
+        .send_compressed(CompressionEncoding::Gzip)
+        .accept_compressed(CompressionEncoding::Zstd)
+        .accept_compressed(CompressionEncoding::Gzip);
 
-    println!("GreeterServer listening on {}", addr);
+    let auth = auth::AuthImpl::default();
+    let auth = auth::AuthServiceServer::new(auth);
+
+    let entity = entity::EntityImpl::default();
+    let entity = entity::EntityServiceServer::with_interceptor(entity, auth::check_auth);
+
+    println!("SmartAuto backend listening on {}", addr);
 
     Server::builder()
         .accept_http1(true)
         .add_service(service_reflection)
         .add_service(tonic_web::enable(greeter))
+        .add_service(tonic_web::enable(auth))
+        .add_service(tonic_web::enable(entity))
         .serve(addr)
         .await?;
 
     Ok(())
-}
-
-fn check_auth(req: Request<()>) -> Result<Request<()>, Status> {
-    let token: MetadataValue<_> = "ABC".parse().unwrap();
-
-    match req.metadata().get("authorization") {
-        Some(t) if token == t => Ok(req),
-        _ => Err(Status::unauthenticated("No valid auth token")),
-    }
 }

@@ -2,19 +2,54 @@
 // @generated from file smartauto/v1/auth_service.proto (package smartauto.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenService } from "@bufbuild/protobuf/codegenv1";
-import { fileDesc, serviceDesc } from "@bufbuild/protobuf/codegenv1";
+import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv1";
+import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv1";
+import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file smartauto/v1/auth_service.proto.
  */
 export const file_smartauto_v1_auth_service: GenFile = /*@__PURE__*/
-  fileDesc("Ch9zbWFydGF1dG8vdjEvYXV0aF9zZXJ2aWNlLnByb3RvEgxzbWFydGF1dG8udjEyDQoLQXV0aFNlcnZpY2ViBnByb3RvMw");
+  fileDesc("Ch9zbWFydGF1dG8vdjEvYXV0aF9zZXJ2aWNlLnByb3RvEgxzbWFydGF1dG8udjEiDgoMTG9naW5SZXF1ZXN0Ig8KDUxvZ2luUmVzcG9uc2UyTwoLQXV0aFNlcnZpY2USQAoFTG9naW4SGi5zbWFydGF1dG8udjEuTG9naW5SZXF1ZXN0Ghsuc21hcnRhdXRvLnYxLkxvZ2luUmVzcG9uc2ViBnByb3RvMw");
+
+/**
+ * @generated from message smartauto.v1.LoginRequest
+ */
+export type LoginRequest = Message<"smartauto.v1.LoginRequest"> & {
+};
+
+/**
+ * Describes the message smartauto.v1.LoginRequest.
+ * Use `create(LoginRequestSchema)` to create a new message.
+ */
+export const LoginRequestSchema: GenMessage<LoginRequest> = /*@__PURE__*/
+  messageDesc(file_smartauto_v1_auth_service, 0);
+
+/**
+ * @generated from message smartauto.v1.LoginResponse
+ */
+export type LoginResponse = Message<"smartauto.v1.LoginResponse"> & {
+};
+
+/**
+ * Describes the message smartauto.v1.LoginResponse.
+ * Use `create(LoginResponseSchema)` to create a new message.
+ */
+export const LoginResponseSchema: GenMessage<LoginResponse> = /*@__PURE__*/
+  messageDesc(file_smartauto_v1_auth_service, 1);
 
 /**
  * @generated from service smartauto.v1.AuthService
  */
 export const AuthService: GenService<{
+  /**
+   * @generated from rpc smartauto.v1.AuthService.Login
+   */
+  login: {
+    methodKind: "unary";
+    input: typeof LoginRequestSchema;
+    output: typeof LoginResponseSchema;
+  },
 }> = /*@__PURE__*/
   serviceDesc(file_smartauto_v1_auth_service, 0);
 

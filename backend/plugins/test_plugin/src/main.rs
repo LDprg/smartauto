@@ -1,21 +1,33 @@
-use hello_world::SayHelloRequest;
-use hello_world::greeter_service_client::GreeterServiceClient;
+use tonic::Request;
+use tonic::codec::CompressionEncoding;
+use tonic::transport::Channel;
 
-pub mod hello_world {
+use smartauto::greeter_service_client::GreeterServiceClient;
+use smartauto::*;
+
+pub mod smartauto {
     tonic::include_proto!("smartauto.v1");
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut client = GreeterServiceClient::connect("http://127.0.0.1:3000").await?;
+    let channel = Channel::builder("http://127.0.0.1:3000".parse().unwrap())
+        .connect()
+        .await?;
 
-    let request = tonic::Request::new(SayHelloRequest {
+    let mut client = GreeterServiceClient::new(channel)
+        .send_compressed(CompressionEncoding::Zstd)
+        .send_compressed(CompressionEncoding::Gzip)
+        .accept_compressed(CompressionEncoding::Zstd)
+        .accept_compressed(CompressionEncoding::Gzip);
+
+    let request = Request::new(SayHelloRequest {
         name: "Tonic123".into(),
     });
 
     let response = client.say_hello(request).await?;
 
-    println!("RESPONSE={:?}", response);
+    println!("RESPONSE={:#?}", response);
 
     Ok(())
 }

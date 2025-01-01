@@ -13,8 +13,6 @@ export const file_smartauto_v1_helloworld: GenFile = /*@__PURE__*/
   fileDesc("Ch1zbWFydGF1dG8vdjEvaGVsbG93b3JsZC5wcm90bxIMc21hcnRhdXRvLnYxIh8KD1NheUhlbGxvUmVxdWVzdBIMCgRuYW1lGAEgASgJIiMKEFNheUhlbGxvUmVzcG9uc2USDwoHbWVzc2FnZRgBIAEoCTJdCg5HcmVldGVyU2VydmljZRJLCghTYXlIZWxsbxIdLnNtYXJ0YXV0by52MS5TYXlIZWxsb1JlcXVlc3QaHi5zbWFydGF1dG8udjEuU2F5SGVsbG9SZXNwb25zZSIAYgZwcm90bzM");
 
 /**
- * The request message containing the user's name.
- *
  * @generated from message smartauto.v1.SayHelloRequest
  */
 export type SayHelloRequest = Message<"smartauto.v1.SayHelloRequest"> & {
@@ -32,8 +30,6 @@ export const SayHelloRequestSchema: GenMessage<SayHelloRequest> = /*@__PURE__*/
   messageDesc(file_smartauto_v1_helloworld, 0);
 
 /**
- * The response message containing the greetings
- *
  * @generated from message smartauto.v1.SayHelloResponse
  */
 export type SayHelloResponse = Message<"smartauto.v1.SayHelloResponse"> & {
@@ -51,14 +47,10 @@ export const SayHelloResponseSchema: GenMessage<SayHelloResponse> = /*@__PURE__*
   messageDesc(file_smartauto_v1_helloworld, 1);
 
 /**
- * The greeting service definition.
- *
  * @generated from service smartauto.v1.GreeterService
  */
 export const GreeterService: GenService<{
   /**
-   * Sends a greeting
-   *
    * @generated from rpc smartauto.v1.GreeterService.SayHello
    */
   sayHello: {
