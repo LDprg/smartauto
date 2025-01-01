@@ -8,7 +8,7 @@
     "frontend/plugins/*"
   ],
   "scripts": {
-    "dev": "trubo run dev",
+    "dev": "turbo run dev",
     "build": "turbo run build",
     "preview": "turbo run preview",
     "check": "turbo run check",

@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          version: 9
+          bun-version: latest
       - name: Install
-        run: pnpm -r install
+        run: bun install
       - name: Build
-        run: pnpm -r build
+        run: bun run build
