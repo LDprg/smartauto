@@ -15,9 +15,10 @@
     "format": "prettier --write \"**/*.{json,md}\"&& turbo run format",
     "lint": "prettier --check \"**/*.{json,md}\" && turbo run lint",
     "analyse": "turbo run analyse",
-    "prepare": "pre-commit install"
+    "prepare": "pre-commit install && buf generate"
   },
   "devDependencies": {
+    "prettier": "^3.4.2",
     "turbo": "^2.3.3"
   }
 }

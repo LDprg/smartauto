@@ -9,6 +9,9 @@ node_modules
 /build
 analyse.html
 
+# Protobuf
+src/gen
+
 # OS
 .DS_Store
 Thumbs.db

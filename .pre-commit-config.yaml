@@ -59,8 +59,6 @@ repos:
     hooks:
       - id: buf-format
       - id: buf-lint
-      # - id: buf-breaking # detect breaking changes in protobuf, not needed for now
-      - id: buf-generate
   - repo: local
     hooks:
       - id: bun-fmt

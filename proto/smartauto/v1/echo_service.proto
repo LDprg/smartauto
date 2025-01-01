@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package smartauto.v1;
 
-service GreeterService {
+service EchoService {
   rpc SayHello(SayHelloRequest) returns (SayHelloResponse) {}
 }
 

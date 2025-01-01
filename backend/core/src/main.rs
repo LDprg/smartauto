@@ -13,8 +13,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .register_encoded_file_descriptor_set(smartauto::FILE_DESCRIPTOR_SET)
         .build_v1alpha()?;
 
-    let greeter = greeter::GreeterImpl::default();
-    let greeter = greeter::GreeterServiceServer::new(greeter)
+    let greeter = echo::EchoImpl::default();
+    let greeter = echo::EchoServiceServer::new(greeter)
         .send_compressed(CompressionEncoding::Zstd)
         .send_compressed(CompressionEncoding::Gzip)
         .accept_compressed(CompressionEncoding::Zstd)

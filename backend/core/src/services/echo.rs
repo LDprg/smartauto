@@ -2,13 +2,13 @@ use tonic::{Request, Response, Status};
 
 use crate::smartauto::*;
 
-pub use crate::smartauto::greeter_service_server::{GreeterService, GreeterServiceServer};
+pub use crate::smartauto::echo_service_server::{EchoService, EchoServiceServer};
 
 #[derive(Default)]
-pub struct GreeterImpl {}
+pub struct EchoImpl {}
 
 #[tonic::async_trait]
-impl GreeterService for GreeterImpl {
+impl EchoService for EchoImpl {
     async fn say_hello(
         &self,
         request: Request<SayHelloRequest>,

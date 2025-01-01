@@ -2,7 +2,7 @@ use tonic::Request;
 use tonic::codec::CompressionEncoding;
 use tonic::transport::Channel;
 
-use smartauto::greeter_service_client::GreeterServiceClient;
+use smartauto::echo_service_client::EchoServiceClient;
 use smartauto::*;
 
 pub mod smartauto {
@@ -15,7 +15,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .connect()
         .await?;
 
-    let mut client = GreeterServiceClient::new(channel)
+    let mut client = EchoServiceClient::new(channel)
         .send_compressed(CompressionEncoding::Zstd)
         .send_compressed(CompressionEncoding::Gzip)
         .accept_compressed(CompressionEncoding::Zstd)

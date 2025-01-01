@@ -2,14 +2,14 @@
 	import { createClient } from '@connectrpc/connect';
 	import { createGrpcWebTransport } from '@connectrpc/connect-web';
 
-	import { GreeterService, SayHelloRequestSchema } from '$gen/smartauto/v1/helloworld_pb';
+	import { EchoService, SayHelloRequestSchema } from '$gen/smartauto/v1/echo_service_pb';
 	import { create } from '@bufbuild/protobuf';
 
 	async function callSayHello() {
 		const transport = createGrpcWebTransport({
 			baseUrl: 'http://127.0.0.1:3000',
 		});
-		const client = createClient(GreeterService, transport);
+		const client = createClient(EchoService, transport);
 
 		const message = create(SayHelloRequestSchema, {
 			name: 'web123',
