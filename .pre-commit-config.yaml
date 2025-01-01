@@ -50,7 +50,7 @@ repos:
       - id: fmt
       - id: clippy
   - repo: https://github.com/errata-ai/vale
-    rev: v3.9.1
+    rev: v3.9.2
     hooks:
       - id: vale
         exclude: (.*_pb\.ts)|(LICENSE.md)
