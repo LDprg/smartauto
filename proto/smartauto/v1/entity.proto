@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package proto.smartauto.v1;
+
+message EntityID {
+  string id = 1;
+}

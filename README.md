@@ -14,9 +14,10 @@ These dependencies should be installed first:
 - [protobuf-es](https://github.com/bufbuild/protobuf-es)
 
 It's also recommended to install:
+
 - [crangelift codegen](https://github.com/rust-lang/rustc_codegen_cranelift)
 - [mold](https://github.com/rui314/mold)
-They primarly speed up development rust build process.
+  They primarly speed up development rust build process.
 
 # Building
 

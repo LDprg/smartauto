@@ -4,5 +4,3 @@ plugins:
   - local: protoc-gen-es
     opt: target=ts
     out: frontend/core/src/gen
-inputs:
-  - directory: proto

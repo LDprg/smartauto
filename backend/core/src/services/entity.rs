@@ -14,6 +14,7 @@ impl EntityService for EntityImpl {
         request: Request<CreateEntityRequest>,
     ) -> Result<Response<CreateEntityResponse>, Status> {
         println!("Got a request from {:?}", request.remote_addr());
+        println!("Recieved: {:?}", request.into_inner().id);
 
         let response = CreateEntityResponse {};
         Ok(Response::new(response))

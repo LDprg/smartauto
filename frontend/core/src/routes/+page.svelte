@@ -2,7 +2,7 @@
 	import { createClient } from '@connectrpc/connect';
 	import { createGrpcWebTransport } from '@connectrpc/connect-web';
 
-	import { EchoService, SayHelloRequestSchema } from '$gen/smartauto/v1/echo_service_pb';
+	import { EchoService, SayHelloRequestSchema } from '$gen/proto/smartauto/v1/echo_service_pb';
 	import { create } from '@bufbuild/protobuf';
 
 	async function callSayHello() {

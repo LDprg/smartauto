@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package smartauto.v1;
+package proto.smartauto.v1;
 
 service AuthService {
   rpc Login(LoginRequest) returns (LoginResponse);

@@ -6,7 +6,7 @@ use smartauto::echo_service_client::EchoServiceClient;
 use smartauto::*;
 
 pub mod smartauto {
-    tonic::include_proto!("smartauto.v1");
+    tonic::include_proto!("proto.smartauto.v1");
 }
 
 #[tokio::main]

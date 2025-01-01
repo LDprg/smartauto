@@ -1,11 +1,15 @@
 syntax = "proto3";
 
-package smartauto.v1;
+package proto.smartauto.v1;
+
+import "proto/smartauto/v1/entity.proto";
 
 service EntityService {
   rpc CreateEntity(CreateEntityRequest) returns (CreateEntityResponse);
 }
 
-message CreateEntityRequest {}
+message CreateEntityRequest {
+  EntityID id = 1;
+}
 
 message CreateEntityResponse {}
