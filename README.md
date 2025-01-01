@@ -9,9 +9,14 @@
 These dependencies should be installed first:
 
 - [pre-commit](https://pre-commit.com/#install)
-- [Rust](https://www.rust-lang.org/tools/install)
+- [Rust nightly](https://www.rust-lang.org/tools/install)
 - [bun](https://bun.sh)
 - [protobuf-es](https://github.com/bufbuild/protobuf-es)
+
+It's also recommended to install:
+- [crangelift codegen](https://github.com/rust-lang/rustc_codegen_cranelift)
+- [mold](https://github.com/rui314/mold)
+They primarly speed up development rust build process.
 
 # Building
 
