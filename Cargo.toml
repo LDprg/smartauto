@@ -1,6 +1,3 @@
 [workspace]
 resolver = "2"
-members = [
-    "backend/core",
-    "backend/plugins/*",
-]
+members = ["backend/core", "backend/plugins/*"]

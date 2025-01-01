@@ -1,4 +1,8 @@
 repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.22.1
+    hooks:
+      - id: gitleaks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
@@ -16,7 +20,7 @@ repos:
       - id: destroyed-symlinks
       - id: detect-private-key
       - id: end-of-file-fixer
-        exclude: .*_pb\..*
+        exclude: .*_pb\.ts
       - id: fix-byte-order-marker
       - id: mixed-line-ending
       - id: trailing-whitespace
@@ -24,6 +28,10 @@ repos:
     rev: v1.0.0
     hooks:
       - id: check-json5
+  - repo: https://github.com/ComPWA/taplo-pre-commit
+    rev: v0.9.3
+    hooks:
+      - id: taplo-format
   - repo: https://github.com/google/yamlfmt
     rev: v0.14.0
     hooks:
@@ -41,6 +49,11 @@ repos:
     hooks:
       - id: fmt
       - id: clippy
+  - repo: https://github.com/errata-ai/vale
+    rev: v3.9.1
+    hooks:
+      - id: vale
+        exclude: (.*_pb\.ts)|(LICENSE.md)
   - repo: https://github.com/bufbuild/buf
     rev: v1.48.0
     hooks:
