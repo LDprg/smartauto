@@ -13,17 +13,11 @@ jobs:
       - uses: bufbuild/buf-action@v1
         with:
           setup_only: true
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
+      - uses: oven-sh/setup-bun@v2
         with:
-          version: 9
-          run_install: false
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+          bun-version: latest
       - name: Install dependencies
-        run: pnpm install -C frontend/core
+        run: bun install
       - name: install protobuf-es
-        run: pnpm add -g @bufbuild/protoc-gen-es
+        run: bun add -g @bufbuild/protoc-gen-es
       - uses: pre-commit/action@v3.0.1
