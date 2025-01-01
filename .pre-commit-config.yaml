@@ -63,15 +63,15 @@ repos:
       - id: buf-generate
   - repo: local
     hooks:
-      - id: pnpm-fmt
-        name: format pnpm
+      - id: bun-fmt
+        name: bun run format
         language: system
-        files: pnpm-workspace.yaml
+        files: package.json
         pass_filenames: false
-        entry: pnpm -r run format
-      - id: pnpm-lint
-        name: lint pnpm
+        entry: bun run format
+      - id: bun-lint
+        name: bun run lint
         language: system
-        files: pnpm-workspace.yaml
+        files: package.json
         pass_filenames: false
-        entry: pnpm -r run lint
+        entry: bun run lint
