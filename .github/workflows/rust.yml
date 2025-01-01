@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: rustup update nightly && rustup default nightly
       - uses: arduino/setup-protoc@v3
       - name: Build
         run: cargo build --verbose
