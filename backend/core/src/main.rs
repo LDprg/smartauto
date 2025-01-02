@@ -19,12 +19,6 @@ use tracing_subscriber::{
     prelude::*,
 };
 
-macro_rules! get_default_layer {
-    () => {
-        tracing_subscriber::fmt::layer().pretty().without_time()
-    };
-}
-
 #[tracing::instrument(level = "trace", skip())]
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -36,16 +30,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let filter_project =
         filter::filter_fn(|metadata| metadata.target().starts_with(module_path!()));
 
-    let default_stdout_log =
-        get_default_layer!().with_filter(filter_project.clone().not().and(LevelFilter::INFO));
+    let default_stdout_log = tracing_subscriber::fmt::layer()
+        .pretty()
+        .without_time()
+        .with_filter(filter_project.or(LevelFilter::INFO));
 
-    let project_stdout_log =
-        get_default_layer!().with_filter(filter_project.and(LevelFilter::TRACE));
-
-    Registry::default()
-        .with(default_stdout_log)
-        .with(project_stdout_log)
-        .init();
+    Registry::default().with(default_stdout_log).init();
 
     tracing::info!(message = "Starting server.", %addr);
 
