@@ -1,15 +1,56 @@
+use std::env;
+use std::sync::Arc;
+
+use database::Database;
 use tonic::codec::CompressionEncoding;
 use tonic::transport::Server;
+
+mod constants;
 
 mod database;
 mod services;
 mod smartauto;
 
 use services::*;
+use tracing::level_filters::LevelFilter;
+use tracing_subscriber::{
+    Registry,
+    filter::{self, FilterExt},
+    prelude::*,
+};
 
+macro_rules! get_default_layer {
+    () => {
+        tracing_subscriber::fmt::layer().pretty().without_time()
+    };
+}
+
+#[tracing::instrument(level = "trace", skip())]
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "127.0.0.1:3000".parse().unwrap();
+    let addr = env::var("HOST_URI")
+        .unwrap_or_else(|_| "127.0.0.1:3000".to_string())
+        .parse()?;
+    let uri = env::var("SCYLLA_URI").unwrap_or_else(|_| "127.0.0.1:9042".to_string());
+
+    let filter_project =
+        filter::filter_fn(|metadata| metadata.target().starts_with(module_path!()));
+
+    let default_stdout_log =
+        get_default_layer!().with_filter(filter_project.clone().not().and(LevelFilter::INFO));
+
+    let project_stdout_log =
+        get_default_layer!().with_filter(filter_project.and(LevelFilter::TRACE));
+
+    Registry::default()
+        .with(default_stdout_log)
+        .with(project_stdout_log)
+        .init();
+
+    tracing::info!(message = "Starting server.", %addr);
+
+    let database = Arc::new(Database::new(&uri).await?);
+
     let service_reflection = tonic_reflection::server::Builder::configure()
         .register_encoded_file_descriptor_set(smartauto::FILE_DESCRIPTOR_SET)
         .build_v1alpha()?;
@@ -24,10 +65,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let auth = auth::AuthImpl::default();
     let auth = auth::AuthServiceServer::new(auth);
 
-    let entity = entity::EntityImpl::default();
+    let entity = entity::EntityImpl::new(database.clone());
     let entity = entity::EntityServiceServer::with_interceptor(entity, auth::check_auth);
 
-    println!("SmartAuto backend listening on {}", addr);
+    tracing::info!("SmartAuto backend listening on {}", addr);
 
     Server::builder()
         .accept_http1(true)
