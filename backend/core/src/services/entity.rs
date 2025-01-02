@@ -1,3 +1,4 @@
+use entity_value::Value;
 use tonic::{Request, Response, Status};
 
 use crate::smartauto::*;
@@ -14,9 +15,35 @@ impl EntityService for EntityImpl {
         request: Request<CreateEntityRequest>,
     ) -> Result<Response<CreateEntityResponse>, Status> {
         println!("Got a request from {:?}", request.remote_addr());
-        println!("Recieved: {:?}", request.into_inner().id);
+        println!("Recieved: {:#?}", request.into_inner());
 
         let response = CreateEntityResponse {};
+        Ok(Response::new(response))
+    }
+
+    async fn update_entity(
+        &self,
+        request: Request<UpdateEntityRequest>,
+    ) -> Result<Response<UpdateEntityResponse>, Status> {
+        println!("Got a request from {:?}", request.remote_addr());
+        println!("Recieved: {:#?}", request.into_inner());
+
+        let response = UpdateEntityResponse {};
+        Ok(Response::new(response))
+    }
+
+    async fn get_entity(
+        &self,
+        request: Request<GetEntityRequest>,
+    ) -> Result<Response<GetEntityResponse>, Status> {
+        println!("Got a request from {:?}", request.remote_addr());
+        println!("Recieved: {:#?}", request.into_inner());
+
+        let response = GetEntityResponse {
+            value: Some(EntityValue {
+                value: Some(Value::Bool(true)),
+            }),
+        };
         Ok(Response::new(response))
     }
 }

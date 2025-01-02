@@ -6,10 +6,28 @@ import "proto/smartauto/v1/entity.proto";
 
 service EntityService {
   rpc CreateEntity(CreateEntityRequest) returns (CreateEntityResponse);
+  rpc UpdateEntity(UpdateEntityRequest) returns (UpdateEntityResponse);
+  rpc GetEntity(GetEntityRequest) returns (GetEntityResponse);
 }
 
 message CreateEntityRequest {
   EntityID id = 1;
+  EntityType type = 2;
 }
 
 message CreateEntityResponse {}
+
+message UpdateEntityRequest {
+  EntityID id = 1;
+  EntityValue value = 2;
+}
+
+message UpdateEntityResponse {}
+
+message GetEntityRequest {
+  EntityID id = 1;
+}
+
+message GetEntityResponse {
+  EntityValue value = 1;
+}

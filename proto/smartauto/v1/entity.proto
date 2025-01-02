@@ -5,3 +5,34 @@ package proto.smartauto.v1;
 message EntityID {
   string id = 1;
 }
+
+enum EntityType {
+  ENTITY_TYPE_UNSPECIFIED = 0;
+
+  ENTITY_TYPE_BOOL = 10;
+
+  ENTITY_TYPE_INT32 = 20;
+  ENTITY_TYPE_INT64 = 21;
+  ENTITY_TYPE_UINT32 = 22;
+  ENTITY_TYPE_UINT64 = 23;
+
+  ENTITY_TYPE_FLOAT = 30;
+  ENTITY_TYPE_DOUBLE = 31;
+
+  ENTITY_TYPE_STRING = 40;
+}
+
+message EntityValue {
+  oneof value {
+    bool bool = 10;
+    int32 int32 = 20;
+    int64 int64 = 21;
+    uint32 uint32 = 22;
+    uint64 uint64 = 23;
+
+    float float = 30;
+    double double = 31;
+
+    string string = 40;
+  }
+}

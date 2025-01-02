@@ -1,6 +1,7 @@
 use tonic::codec::CompressionEncoding;
 use tonic::transport::Server;
 
+mod database;
 mod services;
 mod smartauto;
 
