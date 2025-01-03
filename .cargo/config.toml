@@ -15,7 +15,7 @@ codegen-backend = "llvm"
 linker = "clang"
 rustflags = [
   "-C",
-  "link-arg=-fuse-ld=/usr/bin/mold",
+  "link-arg=-fuse-ld=mold",
   "-Zshare-generics=y",
   "-Zthreads=8",
 ]
