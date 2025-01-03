@@ -4,12 +4,18 @@ codegen-backend = true
 [env]
 CARGO_WORKSPACE_DIR = { value = "", relative = true }
 
-[build]
-rustflags = ["-Z", "threads=8"]
-
-[profile.server-dev]
+[profile.dev]
 codegen-backend = "cranelift"
+
+[profile.dev.package."*"]
+codegen-backend = "llvm"
+
 
 [target.x86_64-unknown-linux-gnu]
 linker = "clang"
-rustflags = ["-C", "link-arg=-fuse-ld=/usr/bin/mold"]
+rustflags = [
+  "-C",
+  "link-arg=-fuse-ld=/usr/bin/mold",
+  "-Zshare-generics=y",
+  "-Zthreads=8",
+]
