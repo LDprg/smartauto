@@ -14,7 +14,6 @@ jobs:
       - name: Install cranelift
         run: rustup component add rustc-codegen-cranelift-preview --toolchain nightly
       - uses: actions/setup-python@v5
-      - uses: arduino/setup-protoc@v3
       - uses: bufbuild/buf-action@v1
         with:
           setup_only: true

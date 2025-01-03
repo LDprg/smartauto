@@ -12,9 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
+      - uses: bufbuild/buf-action@v1
+        with:
+          setup_only: true
       - uses: rui314/setup-mold@v1
       - name: Install cranelift
         run: rustup component add rustc-codegen-cranelift-preview --toolchain nightly
-      - uses: arduino/setup-protoc@v3
       - name: Build
         run: cargo build --verbose
