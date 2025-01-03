@@ -3,7 +3,8 @@ syntax = "proto3";
 package proto.smartauto.v1;
 
 message EntityID {
-  string id = 1;
+  reserved 1; // scope string
+  string id = 2;
 }
 
 enum EntityType {

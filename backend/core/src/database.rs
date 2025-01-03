@@ -1,7 +1,9 @@
-use scylla::{SessionBuilder, transport::session::Session};
+use scylla::{SessionBuilder, prepared_statement::PreparedStatement, transport::session::Session};
 
 pub struct Database {
     session: Session,
+
+    create_entity_prepare: PreparedStatement,
 }
 
 impl Database {
@@ -12,7 +14,8 @@ impl Database {
         let session: Session = SessionBuilder::new().known_node(uri).build().await?;
 
         tracing::info!("Connected to db!");
-        tracing::info!("Creating default db structure");
+
+        tracing::info!("Creating default db structure ...");
 
         session.query_unpaged("CREATE KEYSPACE IF NOT EXISTS examples_ks WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', 'replication_factor' : 1}", &[]).await?;
         session
@@ -22,9 +25,20 @@ impl Database {
         )
         .await?;
 
-        tracing::info!("Finished!");
+        tracing::info!("Default structure created!");
 
-        Ok(Self { session })
+        tracing::info!("Prepare CQL Queries ...");
+
+        let create_entity_prepare = session
+            .prepare("INSERT INTO examples_ks.basic (a, b, c) VALUES (?, ?, ?)")
+            .await?;
+
+        tracing::info!("Queries prepared!");
+
+        Ok(Self {
+            session,
+            create_entity_prepare,
+        })
     }
 
     #[tracing::instrument(level = "trace", skip(self))]
@@ -32,10 +46,7 @@ impl Database {
         &self,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.session
-            .query_unpaged(
-                "INSERT INTO examples_ks.basic (a, b, c) VALUES (?, ?, ?)",
-                (3, 5, "def1"),
-            )
+            .execute_unpaged(&self.create_entity_prepare, (3, 5, "def1"))
             .await?;
 
         Ok(())
