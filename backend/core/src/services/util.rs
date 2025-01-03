@@ -4,23 +4,17 @@ use tonic_types::{BadRequest, Help, StatusExt};
 use crate::constants::*;
 
 pub trait ExtendBadRequest {
-    fn add_required(&mut self, name: &str);
-    fn add_required_cond(&mut self, cond: bool, name: &str);
+    fn add_required(&mut self, cond: bool, name: &str);
     fn add_not_empty(&mut self, name: &str, data: &str);
     fn has_violation(self) -> Option<Status>;
 }
 
 // Blanket implementation for SomeStruct
 impl ExtendBadRequest for BadRequest {
-    #[tracing::instrument(level = "trace", skip(self, name))]
-    fn add_required(&mut self, name: &str) {
-        self.add_violation(name, format!("{} is required", name));
-    }
-
     #[tracing::instrument(level = "trace", skip(self, cond, name))]
-    fn add_required_cond(&mut self, cond: bool, name: &str) {
+    fn add_required(&mut self, cond: bool, name: &str) {
         if cond {
-            self.add_required(name);
+            self.add_violation(name, format!("{} is required", name));
         }
     }
 

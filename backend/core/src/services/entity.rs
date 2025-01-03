@@ -31,7 +31,7 @@ impl EntityService for EntityImpl {
 
         let mut bad_request = BadRequest::new(vec![]);
 
-        bad_request.add_required_cond(message.id.is_none(), "id");
+        bad_request.add_required(message.id.is_none(), "id");
 
         if let Some(id) = message.id.as_ref() {
             bad_request.add_not_empty("id.id", &id.id)
@@ -41,14 +41,24 @@ impl EntityService for EntityImpl {
             return Err(status);
         }
 
-        tracing::debug!("Recieved:\n{:#?}", message);
+        let database = self.database.clone();
+        let (tx, rx) = tokio::sync::oneshot::channel();
 
-        if let Err(err) = self.database.create_client().await {
-            return Err(Status::from_error(err));
-        }
+        tokio::spawn(async move {
+            tracing::debug!("Recieved:\n{:#?}", message);
 
-        let response = CreateEntityResponse {};
-        Ok(Response::new(response))
+            let result = async {
+                database.create_client().await?;
+
+                let response = CreateEntityResponse {};
+                Ok(Response::new(response))
+            }
+            .await;
+
+            tx.send(result.map_err(Status::from_error)).unwrap();
+        });
+
+        rx.await.map_err(|err| Status::from_error(Box::new(err)))?
     }
 
     #[tracing::instrument(level = "trace", skip(self, request))]
@@ -61,8 +71,8 @@ impl EntityService for EntityImpl {
 
         let mut bad_request = BadRequest::new(vec![]);
 
-        bad_request.add_required_cond(message.id.is_none(), "id");
-        bad_request.add_required_cond(message.value.is_none(), "value");
+        bad_request.add_required(message.id.is_none(), "id");
+        bad_request.add_required(message.value.is_none(), "value");
 
         if let Some(id) = message.id.as_ref() {
             bad_request.add_not_empty("id.id", &id.id)
@@ -88,7 +98,7 @@ impl EntityService for EntityImpl {
 
         let mut bad_request = BadRequest::new(vec![]);
 
-        bad_request.add_required_cond(message.id.is_none(), "id");
+        bad_request.add_required(message.id.is_none(), "id");
 
         if let Some(id) = message.id.as_ref() {
             bad_request.add_not_empty("id.id", &id.id)
