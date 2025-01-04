@@ -42,8 +42,13 @@ impl EntityService for EntityImpl {
 
         tracing::debug!("Recieved:\n{:#?}", message);
 
+        let id = message.id.unwrap();
+        let r#type = EntityType::try_from(message.r#type)
+            .map_err(|err| Status::from_error(Box::new(err)))?
+            .as_str_name();
+
         self.database
-            .create_client()
+            .create_entity(&id.id, &r#type)
             .await
             .map_err(Status::from_error)?;
 

@@ -39,7 +39,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     tracing::info!(message = "Starting server.", %addr);
 
-    let database = Arc::new(Database::new(&uri).await?);
+    let database = Database::new(&uri).await;
+
+    if let Err(err) = &database {
+        tracing::error!(%err, "Failed to initialize the database");
+    }
+
+    let database = Arc::new(database?);
 
     let service_reflection = tonic_reflection::server::Builder::configure()
         .register_encoded_file_descriptor_set(smartauto::FILE_DESCRIPTOR_SET)

@@ -1,5 +1,7 @@
 use scylla::{SessionBuilder, prepared_statement::PreparedStatement, transport::session::Session};
 
+use crate::constants::*;
+
 pub struct Database {
     session: Session,
 
@@ -17,10 +19,11 @@ impl Database {
 
         tracing::info!("Creating default db structure ...");
 
-        session.query_unpaged("CREATE KEYSPACE IF NOT EXISTS examples_ks WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', 'replication_factor' : 1}", &[]).await?;
+        session.query_unpaged(format!("CREATE KEYSPACE IF NOT EXISTS {} WITH REPLICATION = {{'class' : 'NetworkTopologyStrategy', 'replication_factor' : 1}}", DATABASE_NAME), &[]).await?;
+
         session
         .query_unpaged(
-            "CREATE TABLE IF NOT EXISTS examples_ks.basic (a int, b int, c text, primary key (a, b))",
+            format!("CREATE TABLE IF NOT EXISTS {}.entity_register (id text, type text, primary key (id))", DATABASE_NAME),
             &[],
         )
         .await?;
@@ -30,7 +33,10 @@ impl Database {
         tracing::info!("Prepare CQL Queries ...");
 
         let create_entity_prepare = session
-            .prepare("INSERT INTO examples_ks.basic (a, b, c) VALUES (?, ?, ?)")
+            .prepare(format!(
+                "INSERT INTO {}.entity_register (id, type) VALUES (?, ?)",
+                DATABASE_NAME
+            ))
             .await?;
 
         tracing::info!("Queries prepared!");
@@ -42,11 +48,13 @@ impl Database {
     }
 
     #[tracing::instrument(level = "trace", skip(self))]
-    pub async fn create_client(
+    pub async fn create_entity(
         &self,
+        id: &str,
+        r#type: &str,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync + 'static>> {
         self.session
-            .execute_unpaged(&self.create_entity_prepare, (3, 5, "def1"))
+            .execute_unpaged(&self.create_entity_prepare, (id, r#type))
             .await?;
 
         Ok(())
