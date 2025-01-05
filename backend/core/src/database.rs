@@ -1,11 +1,10 @@
-use std::sync::Arc;
-
 use scylla::{SessionBuilder, prepared_statement::PreparedStatement, transport::session::Session};
 use tracing::*;
 use uuid::Uuid;
 
 use crate::constants::*;
 use crate::smartauto::*;
+use crate::util::*;
 
 macro_rules! execute_db {
     ($($e:expr),+ $(,)?) => {{
@@ -21,9 +20,8 @@ macro_rules! execute_db {
     };
 }
 
-#[derive(Clone)]
 pub struct Database {
-    session: Arc<Session>,
+    session: Session,
 
     // INSERT
     entity_create_prepare: PreparedStatement,
@@ -44,7 +42,6 @@ impl Database {
         info!(%uri, "Connecting to db ...");
 
         let session: Session = SessionBuilder::new().known_node(uri).build().await?;
-        let session: Arc<Session> = Arc::new(session);
 
         info!("Connected to db!");
 
@@ -120,7 +117,7 @@ impl Database {
 
             return Ok(());
         }
-        Err("Entity already created".into())
+        Err("Entity already exists".into())
     }
 
     pub async fn add_entity_data(
@@ -138,14 +135,7 @@ impl Database {
         if let Some(info) = info.next().transpose()? {
             let uid = info.0;
             if let Some(r#type) = EntityType::from_str_name(info.1) {
-                let value_type = match value {
-                    entity_value::Value::Bool(_) => EntityType::Bool,
-                    entity_value::Value::Int(_) => EntityType::Int,
-                    entity_value::Value::Float(_) => EntityType::Float,
-                    entity_value::Value::String(_) => EntityType::String,
-                };
-
-                if value_type != r#type {
+                if value.as_type() != r#type {
                     return Err(format!("Value has wrong type! Should be: {}", info.1).into());
                 }
 

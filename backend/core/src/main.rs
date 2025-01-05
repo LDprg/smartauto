@@ -10,6 +10,7 @@ mod constants;
 mod database;
 mod services;
 mod smartauto;
+mod util;
 
 use services::*;
 use tracing::level_filters::LevelFilter;
