@@ -3,6 +3,7 @@ use tonic::codec::CompressionEncoding;
 use tonic::transport::Channel;
 
 use tracing::level_filters::LevelFilter;
+use tracing::*;
 use tracing_subscriber::{
     Registry,
     filter::{self, FilterExt},
@@ -46,7 +47,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let response = client.say_hello(request).await?;
 
-    tracing::debug!("RESPONSE={:#?}", response);
+    debug!("RESPONSE={:#?}", response);
 
     Ok(())
 }

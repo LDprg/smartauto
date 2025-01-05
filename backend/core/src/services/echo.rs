@@ -1,5 +1,7 @@
 use tonic::{Request, Response, Status};
 
+use tracing::*;
+
 use crate::smartauto::*;
 
 pub use crate::smartauto::echo_service_server::{EchoService, EchoServiceServer};
@@ -14,7 +16,7 @@ impl EchoService for EchoImpl {
         &self,
         request: Request<SayHelloRequest>,
     ) -> Result<Response<SayHelloResponse>, Status> {
-        tracing::info!("Got a request from {:?}", request.remote_addr());
+        info!("Got a request from {:?}", request.remote_addr());
 
         let response = SayHelloResponse {
             message: format!("Hello {}!", request.into_inner().name),

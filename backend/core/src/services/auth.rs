@@ -1,5 +1,7 @@
 use tonic::{Request, Response, Status, metadata::MetadataValue};
 
+use tracing::*;
+
 use crate::smartauto::*;
 
 pub use crate::smartauto::auth_service_server::{AuthService, AuthServiceServer};
@@ -24,7 +26,7 @@ impl AuthService for AuthImpl {
         &self,
         request: Request<LoginRequest>,
     ) -> Result<Response<LoginResponse>, Status> {
-        tracing::info!("Got a request from {:?}", request.remote_addr());
+        info!("Got a request from {:?}", request.remote_addr());
 
         let response = LoginResponse {};
         Ok(Response::new(response))

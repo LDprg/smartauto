@@ -13,6 +13,7 @@ mod smartauto;
 
 use services::*;
 use tracing::level_filters::LevelFilter;
+use tracing::*;
 use tracing_subscriber::{
     Registry,
     filter::{self, FilterExt},
@@ -37,12 +38,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Registry::default().with(default_stdout_log).init();
 
-    tracing::info!(message = "Starting server.", %addr);
+    info!(%addr, "Starting SmartAuto backend ...");
 
     let database = Database::new(&uri).await;
 
     if let Err(err) = &database {
-        tracing::error!(%err, "Failed to initialize the database");
+        error!(%err, "Failed to initialize the database");
     }
 
     let database = Arc::new(database?);
@@ -64,7 +65,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let entity = entity::EntityImpl::new(database.clone());
     let entity = entity::EntityServiceServer::with_interceptor(entity, auth::check_auth);
 
-    tracing::info!("SmartAuto backend listening on {}", addr);
+    info!(%addr, "SmartAuto backend ready!");
 
     Server::builder()
         .accept_http1(true)

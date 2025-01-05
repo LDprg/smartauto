@@ -1,4 +1,6 @@
 use scylla::{SessionBuilder, prepared_statement::PreparedStatement, transport::session::Session};
+use tracing::info;
+use tracing::*;
 
 use crate::constants::*;
 
@@ -11,13 +13,13 @@ pub struct Database {
 impl Database {
     #[tracing::instrument(level = "trace", skip(uri))]
     pub async fn new(uri: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        tracing::info!("Connecting to db {} ...", uri);
+        info!(%uri, "Connecting to db ...");
 
         let session: Session = SessionBuilder::new().known_node(uri).build().await?;
 
-        tracing::info!("Connected to db!");
+        info!("Connected to db!");
 
-        tracing::info!("Creating default db structure ...");
+        info!("Creating db Keyspace ...");
 
         session.query_unpaged(format!("CREATE KEYSPACE IF NOT EXISTS {} WITH REPLICATION = {{'class' : 'NetworkTopologyStrategy', 'replication_factor' : 1}}", DATABASE_NAME), &[]).await?;
 
@@ -39,7 +41,7 @@ impl Database {
             ))
             .await?;
 
-        tracing::info!("Queries prepared!");
+        info!("Queries prepared!");
 
         Ok(Self {
             session,

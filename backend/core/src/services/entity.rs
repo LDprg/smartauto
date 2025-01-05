@@ -3,6 +3,8 @@ use std::sync::Arc;
 use tonic::{Request, Response, Status};
 use tonic_types::BadRequest;
 
+use tracing::*;
+
 use crate::smartauto::*;
 use crate::{database::Database, services::util::*};
 
@@ -26,7 +28,7 @@ impl EntityService for EntityImpl {
         &self,
         request: Request<CreateEntityRequest>,
     ) -> Result<Response<CreateEntityResponse>, Status> {
-        tracing::info!("Got a request from {:?}", request.remote_addr());
+        info!("Got a request from {:?}", request.remote_addr());
         let message = request.into_inner();
 
         let mut bad_request = BadRequest::new(vec![]);
@@ -40,7 +42,7 @@ impl EntityService for EntityImpl {
 
         bad_request.has_violation()?;
 
-        tracing::debug!("Recieved:\n{:#?}", message);
+        debug!("Recieved:\n{:#?}", message);
 
         let id = message.id.unwrap();
         let r#type = EntityType::try_from(message.r#type)
@@ -60,7 +62,7 @@ impl EntityService for EntityImpl {
         &self,
         request: Request<UpdateEntityRequest>,
     ) -> Result<Response<UpdateEntityResponse>, Status> {
-        tracing::info!("Got a request from {:?}", request.remote_addr());
+        info!("Got a request from {:?}", request.remote_addr());
         let message = request.into_inner();
 
         let mut bad_request = BadRequest::new(vec![]);
@@ -74,7 +76,7 @@ impl EntityService for EntityImpl {
 
         bad_request.has_violation()?;
 
-        tracing::debug!("Recieved:\n{:#?}", message);
+        debug!("Recieved:\n{:#?}", message);
 
         Ok(Response::new(UpdateEntityResponse {}))
     }
@@ -84,7 +86,7 @@ impl EntityService for EntityImpl {
         &self,
         request: Request<GetEntityRequest>,
     ) -> Result<Response<GetEntityResponse>, Status> {
-        tracing::info!("Got a request from {:?}", request.remote_addr());
+        info!("Got a request from {:?}", request.remote_addr());
         let message = request.into_inner();
 
         let mut bad_request = BadRequest::new(vec![]);
@@ -97,7 +99,7 @@ impl EntityService for EntityImpl {
 
         bad_request.has_violation()?;
 
-        tracing::debug!("Recieved:\n{:#?}", message);
+        debug!("Recieved:\n{:#?}", message);
 
         let response = GetEntityResponse {
             value: Some(EntityValue {
