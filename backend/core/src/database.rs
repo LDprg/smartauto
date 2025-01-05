@@ -1,39 +1,23 @@
 use std::sync::Arc;
 
 use scylla::{SessionBuilder, prepared_statement::PreparedStatement, transport::session::Session};
-use tokio::task::JoinSet;
 use tracing::*;
 use uuid::Uuid;
 
 use crate::constants::*;
 use crate::smartauto::*;
 
-macro_rules! execute_db_async {
-    ($session:expr, $vec:expr) => {{
-        let mut set: JoinSet<_> = $vec
-            .into_iter()
-            .map(|query| {
-                let session: Arc<Session> = $session.clone();
-                tokio::task::spawn(async move { session.query_unpaged(query, &[]).await })
-            })
-            .collect();
-
-        while let Some(res) = set.join_next().await {
-            let _ = res???;
-        }
+macro_rules! execute_db {
+    ($($e:expr),+ $(,)?) => {{
+        tokio::try_join!{
+            $($e),*
+        }?
     }};
-}
 
-macro_rules! prepare_entity_data {
-    ($session:expr, $query_string:expr, $($var_name:ident => $table_name:expr),*) => {
-        $(
-            let $var_name = $session
-                .prepare(format!(
-                    $query_string,
-                    $table_name
-                ))
-                .await?;
-        )*
+    ($($e:expr => $v:ident),+ $(,)?) => {
+        let ( $($v),* ) = execute_db!{
+            $($e),*
+        };
     };
 }
 
@@ -76,40 +60,31 @@ impl Database {
 
         info!("Creating db Tables ...");
 
-        execute_db_async!(session, vec![
-            "CREATE TABLE IF NOT EXISTS entity_register (id text, uid uuid, created timestamp, type text, PRIMARY KEY (id))",
-            "CREATE TABLE IF NOT EXISTS entity_data_bool (uid uuid, timestamp timestamp, data boolean, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)",
-            "CREATE TABLE IF NOT EXISTS entity_data_int (uid uuid, timestamp timestamp, data bigint, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)",
-            "CREATE TABLE IF NOT EXISTS entity_data_float (uid uuid, timestamp timestamp, data double, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)",
-            "CREATE TABLE IF NOT EXISTS entity_data_string (uid uuid, timestamp timestamp, data text, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)",
-        ]);
+        execute_db!(
+            session.query_unpaged("CREATE TABLE IF NOT EXISTS entity_register (id text, uid uuid, created timestamp, type text, PRIMARY KEY (id))", &[]),
+            session.query_unpaged("CREATE TABLE IF NOT EXISTS entity_data_bool (uid uuid, timestamp timestamp, data boolean, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)", &[]),
+            session.query_unpaged("CREATE TABLE IF NOT EXISTS entity_data_int (uid uuid, timestamp timestamp, data bigint, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)", &[]),
+            session.query_unpaged("CREATE TABLE IF NOT EXISTS entity_data_float (uid uuid, timestamp timestamp, data double, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)", &[]),
+            session.query_unpaged("CREATE TABLE IF NOT EXISTS entity_data_string (uid uuid, timestamp timestamp, data text, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)", &[]),
+        );
 
         info!("Tables created!");
 
         info!("Preparing db Queries ...");
 
-        // INSERT
-        let entity_create_prepare = session
-            .prepare("INSERT INTO entity_register (id, uid, type, created) VALUES (?, uuid(), ?, toTimestamp(now()))")
-            .await?;
-
-        prepare_entity_data!(
-            session,
-            "INSERT INTO {} (uid, data, timestamp) VALUES (?, ?, toTimestamp(now()))",
-            entity_data_bool_add_prepare => "entity_data_bool",
-            entity_data_int_add_prepare => "entity_data_int",
-            entity_data_float_add_prepare => "entity_data_float",
-            entity_data_string_add_prepare => "entity_data_string"
+        let entity_data_add_str =
+            "INSERT INTO {} (uid, data, timestamp) VALUES (?, ?, toTimestamp(now()))";
+        execute_db!(
+            // INSERT
+            session.prepare("INSERT INTO entity_register (id, uid, type, created) VALUES (?, uuid(), ?, toTimestamp(now()))") => entity_create_prepare,
+            session.prepare(entity_data_add_str.replace("{}", "entity_data_bool")) => entity_data_bool_add_prepare,
+            session.prepare(entity_data_add_str.replace("{}", "entity_data_int")) => entity_data_int_add_prepare,
+            session.prepare(entity_data_add_str.replace("{}", "entity_data_float")) => entity_data_float_add_prepare,
+            session.prepare(entity_data_add_str.replace("{}", "entity_data_string")) => entity_data_string_add_prepare,
+            // SELECT
+            session.prepare("SELECT uid, type FROM entity_register WHERE id = ?") => entity_get_uid_type_prepare,
+            session.prepare("SELECT uid FROM entity_register WHERE id = ?") => entity_get_uid_prepare,
         );
-
-        // SELECT
-        let entity_get_uid_type_prepare = session
-            .prepare("SELECT uid, type FROM entity_register WHERE id = ?")
-            .await?;
-
-        let entity_get_uid_prepare = session
-            .prepare("SELECT uid FROM entity_register WHERE id = ?")
-            .await?;
 
         info!("Queries prepared!");
 
