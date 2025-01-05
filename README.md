@@ -54,6 +54,7 @@ SmartAuto uses ScyllaDB as database (swappable with Apache Cassandra, although n
 The frontend is only a static generated site, so it doesn't need any special web server. We highly recommend caddy due to it good speed and easy configurability. Alternative you could use any other webserver (for example nginx).
 
 ### Scalleable
+
 While SmartAuto is written pimarly for home automasiations, it's designed to scale almost indefinetly. Using ScallaDB allows db clustering, the frontend can also be distributed on multiple servers. One raspberry pi couldn't handle your homeautomisation load? Just grab a view and scale the thing up!
 
 # Note
