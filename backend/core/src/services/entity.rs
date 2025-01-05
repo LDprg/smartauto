@@ -73,10 +73,21 @@ impl EntityService for EntityImpl {
         if let Some(id) = message.id.as_ref() {
             bad_request.add_not_valid_id("id", &id.id);
         }
+        if let Some(value) = message.value.as_ref() {
+            bad_request.add_required("value.value", &value.value);
+        }
 
         bad_request.has_violation()?;
 
         debug!("Recieved:\n{:#?}", message);
+
+        let id = message.id.unwrap();
+        let value = message.value.unwrap().value.unwrap();
+
+        self.database
+            .add_entity_data(&id.id, &value)
+            .await
+            .map_err(Status::from_error)?;
 
         Ok(Response::new(UpdateEntityResponse {}))
     }

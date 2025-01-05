@@ -12,11 +12,9 @@ enum EntityType {
 
   ENTITY_TYPE_BOOL = 10;
 
-  ENTITY_TYPE_INT32 = 20;
-  ENTITY_TYPE_INT64 = 21;
+  ENTITY_TYPE_INT = 20;
 
   ENTITY_TYPE_FLOAT = 30;
-  ENTITY_TYPE_DOUBLE = 31;
 
   ENTITY_TYPE_STRING = 40;
 }
@@ -24,12 +22,8 @@ enum EntityType {
 message EntityValue {
   oneof value {
     bool bool = 10;
-    int32 int32 = 20;
-    int64 int64 = 21;
-
-    float float = 30;
-    double double = 31;
-
+    int64 int = 20;
+    double float = 30;
     string string = 40;
   }
 }
