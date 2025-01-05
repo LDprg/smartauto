@@ -37,36 +37,36 @@ Don't forget to install pre-commit with `pre-commit install` before making any c
 
 # Why SmartAuto
 
-SmartAuto is very similar to homeassistant of the surface, but takes a lot of diffrent design choices, to fix many inconviences of homeassistant.
-Modularity and perfomance as well as reliability are the main focus points of SmartAuto
+SmartAuto is very similar to homeassistant of the surface, but takes a lot of different design choices, to fix many inconveniences of homeassistant.
+Modularity and performance as well as reliability are the main focus points of SmartAuto
 
 ### Modularity
 
-SmartAuto is easily extendable and integratable by using grpc for a general interface between plugins, frontends, automisations and extenernal application.
+SmartAuto is easily extendable and integrable by using grpc for a general interface between plugins, frontend's, automation's and external application.
 This not only simplifies development process, since there is only one interface to maintain, it also allows easily extendability with custom software.
 Due to the nature of grpc there is no restriction for which language to use as long as it supports grpc.
 
 ### Fast
 
 The core of SmartAuto uses in Rust providing a quick backend. The frontend uses in svelte, which is one of the fastest frameworks.
-SmartAuto uses ScyllaDB as database (swappable with Apache Cassandra, although not recommended), which is fast and easliy scaled.
+SmartAuto uses ScyllaDB as database (swappable with Apache Cassandra, although not recommended), which is fast and easily scaled.
 
 The frontend is only a static generated site, so it doesn't need any special web server. We highly recommend caddy due to it good speed and easy configurability. Alternative you could use any other webserver (for example nginx).
 
 ### Scalleable
 
-While SmartAuto is written pimarly for home automasiations, it's designed to scale almost indefinetly. Using ScallaDB allows db clustering, the frontend can also be distributed on multiple servers. One raspberry pi couldn't handle your homeautomisation load? Just grab a view and scale the thing up!
+While SmartAuto is written primally for home automatization, it's designed to scale almost indefinitely. Using ScyllaDB allows db clustering, the frontend can also be distributed on multiple servers. One raspberry pi couldn't handle your home automatization load? Just grab a view and scale the thing up!
 
 # Note
 
 Currently this project is pre-alpha and native linux only.
-Alot of thing will change!
+a lot of thing will change!
 
 THIS PROJECT ISN'T PRODUCTION READY IT'S TESTING ONLY.
 
 # Planned features
 
-A rough longterm todo-list:
+A rough long-term todo-list:
 
 - basic features working
 - docker support
