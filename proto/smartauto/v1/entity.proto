@@ -14,8 +14,6 @@ enum EntityType {
 
   ENTITY_TYPE_INT32 = 20;
   ENTITY_TYPE_INT64 = 21;
-  ENTITY_TYPE_UINT32 = 22;
-  ENTITY_TYPE_UINT64 = 23;
 
   ENTITY_TYPE_FLOAT = 30;
   ENTITY_TYPE_DOUBLE = 31;
@@ -28,8 +26,6 @@ message EntityValue {
     bool bool = 10;
     int32 int32 = 20;
     int64 int64 = 21;
-    uint32 uint32 = 22;
-    uint64 uint64 = 23;
 
     float float = 30;
     double double = 31;
