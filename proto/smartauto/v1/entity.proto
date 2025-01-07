@@ -3,8 +3,7 @@ syntax = "proto3";
 package proto.smartauto.v1;
 
 message EntityID {
-  reserved 1; // scope string
-  string id = 2;
+  string id = 1;
 }
 
 enum EntityType {
@@ -14,7 +13,7 @@ enum EntityType {
 
   ENTITY_TYPE_INT = 20;
 
-  ENTITY_TYPE_FLOAT = 30;
+  ENTITY_TYPE_DOUBLE = 30;
 
   ENTITY_TYPE_STRING = 40;
 }
@@ -23,7 +22,7 @@ message EntityValue {
   oneof value {
     bool bool = 10;
     int64 int = 20;
-    double float = 30;
+    double double = 30;
     string string = 40;
   }
 }

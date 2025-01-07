@@ -9,7 +9,7 @@ impl AsType for entity_value::Value {
         match self {
             entity_value::Value::Bool(_) => EntityType::Bool,
             entity_value::Value::Int(_) => EntityType::Int,
-            entity_value::Value::Float(_) => EntityType::Float,
+            entity_value::Value::Double(_) => EntityType::Double,
             entity_value::Value::String(_) => EntityType::String,
         }
     }

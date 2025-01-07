@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package proto.smartauto.v1;
+
+service AdminService {
+  rpc AddUser(AddUserRequest) returns (AddUserResponse);
+}
+
+message AddUserRequest {}
+
+message AddUserResponse {}

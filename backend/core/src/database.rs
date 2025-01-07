@@ -28,7 +28,7 @@ pub struct Database {
 
     entity_data_bool_add_prepare: PreparedStatement,
     entity_data_int_add_prepare: PreparedStatement,
-    entity_data_float_add_prepare: PreparedStatement,
+    entity_data_double_add_prepare: PreparedStatement,
     entity_data_string_add_prepare: PreparedStatement,
 
     // SELECT
@@ -76,7 +76,7 @@ impl Database {
             session.prepare("INSERT INTO entity_register (id, uid, type, created) VALUES (?, uuid(), ?, toTimestamp(now()))") => entity_create_prepare,
             session.prepare(entity_data_add_str.replace("{}", "entity_data_bool")) => entity_data_bool_add_prepare,
             session.prepare(entity_data_add_str.replace("{}", "entity_data_int")) => entity_data_int_add_prepare,
-            session.prepare(entity_data_add_str.replace("{}", "entity_data_float")) => entity_data_float_add_prepare,
+            session.prepare(entity_data_add_str.replace("{}", "entity_data_float")) => entity_data_double_add_prepare,
             session.prepare(entity_data_add_str.replace("{}", "entity_data_string")) => entity_data_string_add_prepare,
             // SELECT
             session.prepare("SELECT uid, type FROM entity_register WHERE id = ?") => entity_get_uid_type_prepare,
@@ -90,7 +90,7 @@ impl Database {
             entity_create_prepare,
             entity_data_bool_add_prepare,
             entity_data_int_add_prepare,
-            entity_data_float_add_prepare,
+            entity_data_double_add_prepare,
             entity_data_string_add_prepare,
             entity_get_uid_type_prepare,
             entity_get_uid_prepare,
@@ -150,9 +150,9 @@ impl Database {
                             .execute_unpaged(&self.entity_data_int_add_prepare, (uid, value))
                             .await?;
                     }
-                    entity_value::Value::Float(value) => {
+                    entity_value::Value::Double(value) => {
                         self.session
-                            .execute_unpaged(&self.entity_data_float_add_prepare, (uid, value))
+                            .execute_unpaged(&self.entity_data_double_add_prepare, (uid, value))
                             .await?;
                     }
                     entity_value::Value::String(value) => {
