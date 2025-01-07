@@ -20,10 +20,13 @@ macro_rules! execute_db {
     };
 }
 
+#[allow(dead_code)]
 pub struct Database {
     session: Session,
 
     // INSERT
+    user_create_prepare: PreparedStatement,
+
     entity_create_prepare: PreparedStatement,
 
     entity_data_bool_add_prepare: PreparedStatement,
@@ -32,6 +35,8 @@ pub struct Database {
     entity_data_string_add_prepare: PreparedStatement,
 
     // SELECT
+    user_get_prepare: PreparedStatement,
+
     entity_get_uid_type_prepare: PreparedStatement,
     entity_get_uid_prepare: PreparedStatement,
 }
@@ -58,6 +63,7 @@ impl Database {
         info!("Creating db Tables ...");
 
         execute_db!(
+            session.query_unpaged("CREATE TABLE IF NOT EXISTS users (name text, uid uuid, created timestamp, disabled boolean, password_hash text, PRIMARY KEY (name))", &[]),
             session.query_unpaged("CREATE TABLE IF NOT EXISTS entity_register (id text, uid uuid, created timestamp, type text, PRIMARY KEY (id))", &[]),
             session.query_unpaged("CREATE TABLE IF NOT EXISTS entity_data_bool (uid uuid, timestamp timestamp, data boolean, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)", &[]),
             session.query_unpaged("CREATE TABLE IF NOT EXISTS entity_data_int (uid uuid, timestamp timestamp, data bigint, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)", &[]),
@@ -73,12 +79,14 @@ impl Database {
             "INSERT INTO {} (uid, data, timestamp) VALUES (?, ?, toTimestamp(now()))";
         execute_db!(
             // INSERT
+            session.prepare("INSERT INTO users (name, password_hash, disabled, uid, created) VALUES (?, ?, ?, uuid(), toTimestamp(now()))") => user_create_prepare,
             session.prepare("INSERT INTO entity_register (id, uid, type, created) VALUES (?, uuid(), ?, toTimestamp(now()))") => entity_create_prepare,
             session.prepare(entity_data_add_str.replace("{}", "entity_data_bool")) => entity_data_bool_add_prepare,
             session.prepare(entity_data_add_str.replace("{}", "entity_data_int")) => entity_data_int_add_prepare,
             session.prepare(entity_data_add_str.replace("{}", "entity_data_float")) => entity_data_double_add_prepare,
             session.prepare(entity_data_add_str.replace("{}", "entity_data_string")) => entity_data_string_add_prepare,
             // SELECT
+            session.prepare("SELECT name, password_hash, uid FROM users WHERE name = ?") => user_get_prepare,
             session.prepare("SELECT uid, type FROM entity_register WHERE id = ?") => entity_get_uid_type_prepare,
             session.prepare("SELECT uid FROM entity_register WHERE id = ?") => entity_get_uid_prepare,
         );
@@ -87,11 +95,13 @@ impl Database {
 
         Ok(Self {
             session,
+            user_create_prepare,
             entity_create_prepare,
             entity_data_bool_add_prepare,
             entity_data_int_add_prepare,
             entity_data_double_add_prepare,
             entity_data_string_add_prepare,
+            user_get_prepare,
             entity_get_uid_type_prepare,
             entity_get_uid_prepare,
         })

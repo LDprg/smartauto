@@ -50,7 +50,7 @@ impl EntityService for EntityImpl {
             .as_str_name();
 
         self.database
-            .create_entity(&id.id, &r#type)
+            .create_entity(&id.id, r#type)
             .await
             .map_err(Status::from_error)?;
 

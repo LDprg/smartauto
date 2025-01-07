@@ -31,11 +31,11 @@ impl ExtendBadRequest for BadRequest {
 
     #[tracing::instrument(level = "trace", skip(self, name, data))]
     fn add_not_valid_id(&mut self, name: &str, data: &str) {
-        self.add_not_empty(name, &data);
+        self.add_not_empty(name, data);
 
         let entity_id_regex = Regex::new(ENTITY_ID_REGEX).unwrap();
 
-        if !entity_id_regex.is_match(&data) {
+        if !entity_id_regex.is_match(data) {
             self.add_violation(
                 name,
                 format!(

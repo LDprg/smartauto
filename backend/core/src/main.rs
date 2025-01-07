@@ -2,8 +2,8 @@ use std::env;
 use std::sync::Arc;
 
 use database::Database;
-use tonic::codec::CompressionEncoding;
 use tonic::transport::Server;
+use tonic::{codec::CompressionEncoding, service::interceptor::InterceptedService};
 
 mod constants;
 
@@ -20,6 +20,15 @@ use tracing_subscriber::{
     filter::{self, FilterExt},
     prelude::*,
 };
+
+macro_rules! new_service {
+    ($e:expr) => {{
+        $e.send_compressed(CompressionEncoding::Zstd)
+            .send_compressed(CompressionEncoding::Gzip)
+            .accept_compressed(CompressionEncoding::Zstd)
+            .accept_compressed(CompressionEncoding::Gzip)
+    }};
+}
 
 #[tracing::instrument(level = "trace", skip())]
 #[tokio::main]
@@ -54,17 +63,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .build_v1alpha()?;
 
     let greeter = echo::EchoImpl::default();
-    let greeter = echo::EchoServiceServer::new(greeter)
-        .send_compressed(CompressionEncoding::Zstd)
-        .send_compressed(CompressionEncoding::Gzip)
-        .accept_compressed(CompressionEncoding::Zstd)
-        .accept_compressed(CompressionEncoding::Gzip);
+    let greeter = new_service!(echo::EchoServiceServer::new(greeter));
 
     let auth = auth::AuthImpl::default();
-    let auth = auth::AuthServiceServer::new(auth);
+    let auth = new_service!(auth::AuthServiceServer::new(auth));
+
+    let admin = admin::AdminImpl::default();
+    let admin = new_service!(admin::AdminServiceServer::new(admin));
+    // let admin = InterceptedService::new(admin, auth::check_auth);
 
     let entity = entity::EntityImpl::new(database.clone());
-    let entity = entity::EntityServiceServer::with_interceptor(entity, auth::check_auth);
+    let entity = new_service!(entity::EntityServiceServer::new(entity));
+    let entity = InterceptedService::new(entity, auth::check_auth);
 
     info!(%addr, "SmartAuto backend ready!");
 
@@ -73,6 +83,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .add_service(service_reflection)
         .add_service(tonic_web::enable(greeter))
         .add_service(tonic_web::enable(auth))
+        .add_service(tonic_web::enable(admin))
         .add_service(tonic_web::enable(entity))
         .serve(addr)
         .await?;

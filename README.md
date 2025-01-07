@@ -15,9 +15,9 @@ These dependencies should be installed first:
 
 It's also recommended to install:
 
-- [crangelift codegen](https://github.com/rust-lang/rustc_codegen_cranelift)
+- [cranelift](https://github.com/rust-lang/rustc_codegen_cranelift)
 - [mold](https://github.com/rui314/mold)
-  They primarly speed up development builds for rust (not needed for release builds).
+  They primarily speed up development builds for rust (not needed for release builds).
 
 # Building
 
@@ -37,7 +37,7 @@ Don't forget to install pre-commit with `pre-commit install` before making any c
 
 # Why SmartAuto
 
-SmartAuto is very similar to homeassistant of the surface, but takes a lot of different design choices, to fix many inconveniences of homeassistant.
+SmartAuto is very similar to homeassistant on the surface, but takes a lot of different design choices, to fix many inconveniences of homeassistant.
 Modularity and performance as well as reliability are the main focus points of SmartAuto
 
 ### Modularity
@@ -53,14 +53,14 @@ SmartAuto uses ScyllaDB as database (swappable with Apache Cassandra, although n
 
 The frontend is only a static generated site, so it doesn't need any special web server. We highly recommend caddy due to it good speed and easy configurability. Alternative you could use any other webserver (for example nginx).
 
-### Scalleable
+### Scalable
 
-While SmartAuto is written primally for home automatization, it's designed to scale almost indefinitely. Using ScyllaDB allows db clustering, the frontend can also be distributed on multiple servers. One raspberry pi couldn't handle your home automatization load? Just grab a view and scale the thing up!
+While SmartAuto is written primally for home automatization, it's designed to scale almost indefinitely. Everything is designed to be able to work as cluster. ScyllaDB can be clustered by default, the frontend is just a statically generated site (could even be hosted locally) and the backend is written in a style that allows clustering.
 
 # Note
 
 Currently this project is pre-alpha and native linux only.
-a lot of thing will change!
+a lot of thing will change, don't expect anything!
 
 THIS PROJECT ISN'T PRODUCTION READY IT'S TESTING ONLY.
 

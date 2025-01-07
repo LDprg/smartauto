@@ -1,12 +1,11 @@
-version: '3.9'
+version: 3.9
 services:
   scylla:
     image: scylladb/scylla:latest
     container_name: scylla
     restart: unless-stopped
     ports:
-      - "9042:9042" # Cassandra query language (CQL) port
-      - "9160:9160" # Thrift protocol port
+      - 9042:9042
     volumes:
       - ./scylla-data:/var/lib/scylla
       - ./scylla-logs:/var/log/scylla
