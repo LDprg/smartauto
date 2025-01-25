@@ -5,8 +5,8 @@ use tonic_types::BadRequest;
 
 use tracing::*;
 
-use crate::smartauto::*;
 use crate::{database::Database, services::util::*};
+use crate::{smartauto::*, try_required};
 
 pub use crate::smartauto::entity_service_server::{EntityService, EntityServiceServer};
 
@@ -31,28 +31,20 @@ impl EntityService for EntityImpl {
         info!("Got a request from {:?}", request.remote_addr());
         let message = request.into_inner();
 
+        let id = try_required!(message.id, "id")?;
+
         let mut bad_request = BadRequest::new(vec![]);
-
-        bad_request.add_required("id", &message.id);
-        if let Some(id) = message.id.as_ref() {
-            bad_request.add_not_valid_id("id", &id.id);
-        }
-
-        bad_request.add_not_valid_type("type", message.r#type);
-
+        bad_request.validate_id("id", &id.id);
+        bad_request.validate_type("type", message.r#type);
         bad_request.has_violation()?;
 
         debug!("Recieved:\n{:#?}", message);
 
-        let id = message.id.unwrap();
         let r#type = EntityType::try_from(message.r#type)
             .map_err(|err| Status::from_error(Box::new(err)))?
             .as_str_name();
 
-        self.database
-            .create_entity(&id.id, r#type)
-            .await
-            .map_err(Status::from_error)?;
+        self.database.create_entity(&id.id, r#type).await?;
 
         Ok(Response::new(CreateEntityResponse {}))
     }
@@ -65,29 +57,17 @@ impl EntityService for EntityImpl {
         info!("Got a request from {:?}", request.remote_addr());
         let message = request.into_inner();
 
+        let id = try_required!(message.id, "id")?;
+        let value = try_required!(message.value, "value")?;
+        let value = try_required!(value.value, "value.value")?;
+
         let mut bad_request = BadRequest::new(vec![]);
-
-        bad_request.add_required("id", &message.id);
-        bad_request.add_required("value", &message.value);
-
-        if let Some(id) = message.id.as_ref() {
-            bad_request.add_not_valid_id("id", &id.id);
-        }
-        if let Some(value) = message.value.as_ref() {
-            bad_request.add_required("value.value", &value.value);
-        }
-
+        bad_request.validate_id("id", &id.id);
         bad_request.has_violation()?;
 
         debug!("Recieved:\n{:#?}", message);
 
-        let id = message.id.unwrap();
-        let value = message.value.unwrap().value.unwrap();
-
-        self.database
-            .add_entity_data(&id.id, &value)
-            .await
-            .map_err(Status::from_error)?;
+        self.database.add_entity_data(&id.id, &value).await?;
 
         Ok(Response::new(UpdateEntityResponse {}))
     }
@@ -100,13 +80,10 @@ impl EntityService for EntityImpl {
         info!("Got a request from {:?}", request.remote_addr());
         let message = request.into_inner();
 
+        let id = try_required!(&message.id, "id")?;
+
         let mut bad_request = BadRequest::new(vec![]);
-
-        bad_request.add_required("id", &message.id);
-
-        if let Some(id) = message.id.as_ref() {
-            bad_request.add_not_valid_id("id", &id.id);
-        }
+        bad_request.validate_id("id", &id.id);
 
         bad_request.has_violation()?;
 
@@ -117,6 +94,7 @@ impl EntityService for EntityImpl {
                 value: Some(entity_value::Value::Bool(true)),
             }),
         };
+
         Ok(Response::new(response))
     }
 }

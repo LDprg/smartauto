@@ -1,10 +1,20 @@
 use scylla::{SessionBuilder, prepared_statement::PreparedStatement, transport::session::Session};
+use tonic::Status;
 use tracing::*;
 use uuid::Uuid;
 
 use crate::constants::*;
 use crate::smartauto::*;
 use crate::util::*;
+
+macro_rules! resolve_error {
+    ($e:expr) => {
+        $e.map_err(|err| {
+            error!(%err);
+            Status::internal("Internal database error")
+        })
+    };
+}
 
 macro_rules! execute_db {
     ($($e:expr),+ $(,)?) => {{
@@ -108,73 +118,87 @@ impl Database {
     }
 
     #[tracing::instrument(level = "trace", skip(self))]
-    pub async fn create_entity(
-        &self,
-        id: &str,
-        r#type: &str,
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync + 'static>> {
-        let exist = self
-            .session
-            .execute_unpaged(&self.entity_get_uid_prepare, (id,))
-            .await?
-            .into_rows_result()?;
-        let mut exist = exist.rows::<(Uuid,)>()?;
-
-        if exist.next().transpose()?.is_none() {
+    pub async fn create_entity(&self, id: &str, r#type: &str) -> Result<(), Status> {
+        let exist = resolve_error!(
             self.session
-                .execute_unpaged(&self.entity_create_prepare, (id, r#type))
-                .await?;
+                .execute_unpaged(&self.entity_get_uid_prepare, (id,))
+                .await
+        )?;
+        let exist = resolve_error!(exist.into_rows_result())?;
+        let mut exist = resolve_error!(exist.rows::<(Uuid,)>())?;
+        let exist = resolve_error!(exist.next().transpose())?;
+
+        if exist.is_none() {
+            resolve_error!(
+                self.session
+                    .execute_unpaged(&self.entity_create_prepare, (id, r#type))
+                    .await
+            )?;
 
             return Ok(());
         }
-        Err("Entity already exists".into())
+        Err(Status::invalid_argument("Entity already exists")) // TODO: Replace with proper error handling
     }
 
     pub async fn add_entity_data(
         &self,
         id: &str,
         value: &entity_value::Value,
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync + 'static>> {
-        let info = self
-            .session
-            .execute_unpaged(&self.entity_get_uid_type_prepare, (id,))
-            .await?
-            .into_rows_result()?;
-        let mut info = info.rows::<(Uuid, &str)>()?;
+    ) -> Result<(), Status> {
+        let info = resolve_error!(
+            self.session
+                .execute_unpaged(&self.entity_get_uid_type_prepare, (id,))
+                .await
+        )?;
 
-        if let Some(info) = info.next().transpose()? {
+        let info = resolve_error!(info.into_rows_result())?;
+        let mut info = resolve_error!(info.rows::<(Uuid, &str)>())?;
+        let info = resolve_error!(info.next().transpose())?;
+
+        if let Some(info) = info {
             let uid = info.0;
             if let Some(r#type) = EntityType::from_str_name(info.1) {
                 if value.as_type() != r#type {
-                    return Err(format!("Value has wrong type! Should be: {}", info.1).into());
+                    return Err(Status::invalid_argument(format!(
+                        "Value has wrong type! Should be: {}",
+                        info.1
+                    ))); // TODO: Replace with proper error handling
                 }
 
                 match value {
                     entity_value::Value::Bool(value) => {
-                        self.session
-                            .execute_unpaged(&self.entity_data_bool_add_prepare, (uid, value))
-                            .await?;
+                        resolve_error!(
+                            self.session
+                                .execute_unpaged(&self.entity_data_bool_add_prepare, (uid, value))
+                                .await
+                        )?;
                     }
                     entity_value::Value::Int(value) => {
-                        self.session
-                            .execute_unpaged(&self.entity_data_int_add_prepare, (uid, value))
-                            .await?;
+                        resolve_error!(
+                            self.session
+                                .execute_unpaged(&self.entity_data_int_add_prepare, (uid, value))
+                                .await
+                        )?;
                     }
                     entity_value::Value::Double(value) => {
-                        self.session
-                            .execute_unpaged(&self.entity_data_double_add_prepare, (uid, value))
-                            .await?;
+                        resolve_error!(
+                            self.session
+                                .execute_unpaged(&self.entity_data_double_add_prepare, (uid, value))
+                                .await
+                        )?;
                     }
                     entity_value::Value::String(value) => {
-                        self.session
-                            .execute_unpaged(&self.entity_data_string_add_prepare, (uid, value))
-                            .await?;
+                        resolve_error!(
+                            self.session
+                                .execute_unpaged(&self.entity_data_string_add_prepare, (uid, value))
+                                .await
+                        )?;
                     }
                 }
                 return Ok(());
             }
-            return Err("Entity doesn't exist".into());
+            return Err(Status::invalid_argument("Entity already exists")); // TODO: Replace with proper error handling
         }
-        Err("Invalid Entity type!".into())
+        return Err(Status::invalid_argument("Invalid Entity type!")); // TODO: Replace with proper error handling
     }
 }

@@ -6,32 +6,38 @@ use crate::constants::*;
 use crate::smartauto::*;
 
 pub trait ExtendBadRequest {
-    fn add_required<T>(&mut self, name: &str, data: &Option<T>);
-    fn add_not_empty(&mut self, name: &str, data: &str);
-    fn add_not_valid_id(&mut self, name: &str, data: &str);
-    fn add_not_valid_type(&mut self, name: &str, data: i32);
+    fn validate_type(&mut self, name: &str, data: i32);
+    fn validate_not_empty(&mut self, name: &str, data: &str) -> bool;
+    fn validate_id(&mut self, name: &str, data: &str) -> bool;
+
     fn has_violation(self) -> Result<(), Status>;
 }
 
 // Blanket implementation for SomeStruct
 impl ExtendBadRequest for BadRequest {
     #[tracing::instrument(level = "trace", skip(self, name, data))]
-    fn add_required<T>(&mut self, name: &str, data: &Option<T>) {
-        if data.is_none() {
-            self.add_violation(name, format!("{} is required", name));
+    fn validate_type(&mut self, name: &str, data: i32) {
+        if let Ok(entity) = EntityType::try_from(data) {
+            if entity == EntityType::Unspecified {
+                self.add_violation(name, format!("{} has to bet set", name));
+            }
+        } else {
+            self.add_violation(name, format!("{} unknown enum value", name));
         }
     }
 
-    #[tracing::instrument(level = "trace", skip(self, name, data))]
-    fn add_not_empty(&mut self, name: &str, data: &str) {
-        if data.is_empty() {
+    #[tracing::instrument(level = "trace", skip(self, name))]
+    fn validate_not_empty(&mut self, name: &str, data: &str) -> bool {
+        let is_empty = data.is_empty();
+        if is_empty {
             self.add_violation(name, format!("{} cannot be empty", name));
         }
+        is_empty
     }
 
-    #[tracing::instrument(level = "trace", skip(self, name, data))]
-    fn add_not_valid_id(&mut self, name: &str, data: &str) {
-        self.add_not_empty(name, data);
+    #[tracing::instrument(level = "trace", skip(self, name))]
+    fn validate_id(&mut self, name: &str, data: &str) -> bool {
+        self.validate_not_empty(name, data);
 
         let entity_id_regex = Regex::new(ENTITY_ID_REGEX).unwrap();
 
@@ -43,18 +49,9 @@ impl ExtendBadRequest for BadRequest {
                     name, ENTITY_ID_REGEX
                 ),
             );
+            return false;
         }
-    }
-
-    #[tracing::instrument(level = "trace", skip(self, name, data))]
-    fn add_not_valid_type(&mut self, name: &str, data: i32) {
-        if let Ok(entity) = EntityType::try_from(data) {
-            if entity == EntityType::Unspecified {
-                self.add_violation(name, format!("{} has to bet set", name));
-            }
-        } else {
-            self.add_violation(name, format!("{} unknown enum value", name));
-        }
+        true
     }
 
     #[tracing::instrument(level = "trace", skip(self))]
