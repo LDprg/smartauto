@@ -7,8 +7,8 @@ use crate::smartauto::*;
 
 pub trait ExtendBadRequest {
     fn validate_type(&mut self, name: &str, data: i32);
-    fn validate_not_empty(&mut self, name: &str, data: &str) -> bool;
-    fn validate_id(&mut self, name: &str, data: &str) -> bool;
+    fn validate_not_empty(&mut self, name: &str, data: &str);
+    fn validate_id(&mut self, name: &str, data: &str);
 
     fn has_violation(self) -> Result<(), Status>;
 }
@@ -27,16 +27,14 @@ impl ExtendBadRequest for BadRequest {
     }
 
     #[tracing::instrument(level = "trace", skip(self, name))]
-    fn validate_not_empty(&mut self, name: &str, data: &str) -> bool {
-        let is_empty = data.is_empty();
-        if is_empty {
+    fn validate_not_empty(&mut self, name: &str, data: &str) {
+        if data.is_empty() {
             self.add_violation(name, format!("{} cannot be empty", name));
         }
-        is_empty
     }
 
     #[tracing::instrument(level = "trace", skip(self, name))]
-    fn validate_id(&mut self, name: &str, data: &str) -> bool {
+    fn validate_id(&mut self, name: &str, data: &str) {
         self.validate_not_empty(name, data);
 
         let entity_id_regex = Regex::new(ENTITY_ID_REGEX).unwrap();
@@ -49,9 +47,7 @@ impl ExtendBadRequest for BadRequest {
                     name, ENTITY_ID_REGEX
                 ),
             );
-            return false;
         }
-        true
     }
 
     #[tracing::instrument(level = "trace", skip(self))]

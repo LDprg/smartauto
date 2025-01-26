@@ -84,7 +84,6 @@ impl EntityService for EntityImpl {
 
         let mut bad_request = BadRequest::new(vec![]);
         bad_request.validate_id("id", &id.id);
-
         bad_request.has_violation()?;
 
         debug!("Recieved:\n{:#?}", message);
