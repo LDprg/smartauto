@@ -31,5 +31,8 @@
 		"typescript-eslint": "^8.19.0",
 		"vite": "^6.0.6",
 		"vite-bundle-visualizer": "^1.2.1"
+	},
+	"dependencies": {
+		"@tailwindcss/postcss": "^4.0.6"
 	}
 }
