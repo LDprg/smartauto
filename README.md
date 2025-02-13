@@ -40,6 +40,10 @@ Don't forget to install pre-commit with `pre-commit install` before making any c
 SmartAuto is very similar to homeassistant on the surface, but takes a lot of different design choices, to fix many inconveniences of homeassistant.
 Modularity and performance as well as reliability are the main focus points of SmartAuto
 
+### Simplicity
+
+SmartAuto is designed to be easy and straight forward to use. Homeassistant for example complicates writing plugins (or integrations) alot by abstracting and heavily relying on python specific features. SmartAuto keeps interfaces simple with grpc and secure with its rust backend.
+
 ### Modularity
 
 SmartAuto is easily extendable and integrable by using grpc for a general interface between plugins, frontend's, automation's and external application.
@@ -63,6 +67,12 @@ Currently this project is pre-alpha and native linux only.
 a lot of thing will change, don't expect anything!
 
 THIS PROJECT ISN'T PRODUCTION READY IT'S TESTING ONLY.
+
+The frontend will get a rust based implementation. The current one is just for testing, since I focus more on the backend for now.
+
+# Contributions
+
+Any contributions hightly appricated. Just fork the repo and make a PR. If you have questions about a idea you want to implement create a issue first.
 
 # Planned features
 
