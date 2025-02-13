@@ -67,7 +67,7 @@ impl EntityService for EntityImpl {
 
         debug!("Recieved:\n{:#?}", message);
 
-        self.database.add_entity_data(&id.id, &value).await?;
+        self.database.add_entity_data(&id.id, value).await?;
 
         Ok(Response::new(UpdateEntityResponse {}))
     }
@@ -84,6 +84,7 @@ impl EntityService for EntityImpl {
 
         let mut bad_request = BadRequest::new(vec![]);
         bad_request.validate_id("id", &id.id);
+
         bad_request.has_violation()?;
 
         debug!("Recieved:\n{:#?}", message);

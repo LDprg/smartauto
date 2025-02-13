@@ -6,15 +6,7 @@ use uuid::Uuid;
 use crate::constants::*;
 use crate::smartauto::*;
 use crate::util::*;
-
-macro_rules! resolve_error {
-    ($e:expr) => {
-        $e.map_err(|err| {
-            error!(%err);
-            Status::internal("Internal database error")
-        })
-    };
-}
+use crate::*;
 
 macro_rules! execute_db {
     ($($e:expr),+ $(,)?) => {{
@@ -199,6 +191,6 @@ impl Database {
             }
             return Err(Status::invalid_argument("Entity already exists")); // TODO: Replace with proper error handling
         }
-        return Err(Status::invalid_argument("Invalid Entity type!")); // TODO: Replace with proper error handling
+        Err(Status::invalid_argument("Invalid Entity type!")) // TODO: Replace with proper error handling
     }
 }
