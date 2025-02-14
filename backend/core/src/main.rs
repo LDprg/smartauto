@@ -7,6 +7,7 @@ use tonic::{codec::CompressionEncoding, service::interceptor::InterceptedService
 
 mod constants;
 
+mod authentication;
 mod database;
 mod services;
 mod smartauto;
@@ -65,16 +66,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let greeter = echo::EchoImpl::default();
     let greeter = new_service!(echo::EchoServiceServer::new(greeter));
 
-    let auth = auth::AuthImpl::default();
+    let auth = auth::AuthImpl::new(database.clone());
     let auth = new_service!(auth::AuthServiceServer::new(auth));
 
-    let admin = admin::AdminImpl::default();
+    let admin = admin::AdminImpl::new(database.clone());
     let admin = new_service!(admin::AdminServiceServer::new(admin));
     // let admin = InterceptedService::new(admin, auth::check_auth);
 
     let entity = entity::EntityImpl::new(database.clone());
     let entity = new_service!(entity::EntityServiceServer::new(entity));
-    let entity = InterceptedService::new(entity, auth::check_auth);
+    let entity = InterceptedService::new(entity, authentication::check_auth);
 
     info!(%addr, "SmartAuto backend ready!");
 

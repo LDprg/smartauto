@@ -5,6 +5,7 @@ pub trait AsType {
 }
 
 impl AsType for entity_value::Value {
+    #[tracing::instrument(level = "trace", skip(self))]
     fn as_type(&self) -> EntityType {
         match self {
             entity_value::Value::Bool(_) => EntityType::Bool,

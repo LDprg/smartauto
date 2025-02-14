@@ -5,6 +5,7 @@
 target
 Cargo.lock
 .bacon-locations
+rustc-ice-*.txt
 
 # NodeJS
 node_modules

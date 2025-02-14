@@ -2,6 +2,7 @@
 name = "smartauto_backend"
 version = "0.1.0"
 edition = "2024"
+default-run = "smartauto_backend"
 
 [dependencies]
 argon2 = "0.5.3"

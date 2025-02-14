@@ -6,6 +6,9 @@ service AdminService {
   rpc AddUser(AddUserRequest) returns (AddUserResponse);
 }
 
-message AddUserRequest {}
+message AddUserRequest {
+  string user = 1;
+  string password = 2;
+}
 
 message AddUserResponse {}

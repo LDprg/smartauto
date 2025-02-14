@@ -1,12 +1,15 @@
-use scylla::{SessionBuilder, prepared_statement::PreparedStatement, transport::session::Session};
+use scylla::{
+    SessionBuilder, macros::DeserializeRow, prepared_statement::PreparedStatement,
+    transport::session::Session,
+};
 use tonic::Status;
 use tracing::*;
 use uuid::Uuid;
 
-use crate::constants::*;
 use crate::smartauto::*;
 use crate::util::*;
 use crate::*;
+use crate::{authentication::generate_pwd_hash, constants::*};
 
 macro_rules! execute_db {
     ($($e:expr),+ $(,)?) => {{
@@ -22,7 +25,6 @@ macro_rules! execute_db {
     };
 }
 
-#[allow(dead_code)]
 pub struct Database {
     session: Session,
 
@@ -43,6 +45,12 @@ pub struct Database {
     entity_get_uid_prepare: PreparedStatement,
 }
 
+#[derive(DeserializeRow)]
+pub struct User {
+    pub name: String,
+    pub password_hash: String,
+}
+
 impl Database {
     #[tracing::instrument(level = "trace", skip(uri))]
     pub async fn new(uri: &str) -> Result<Self, Box<dyn std::error::Error>> {
@@ -60,6 +68,9 @@ impl Database {
         info!("Keyspace created!");
 
         info!("Creating db Types ...");
+
+        // TODO: Add needed types
+
         info!("Types created!");
 
         info!("Creating db Tables ...");
@@ -67,28 +78,23 @@ impl Database {
         execute_db!(
             session.query_unpaged("CREATE TABLE IF NOT EXISTS users (name text, uid uuid, created timestamp, disabled boolean, password_hash text, PRIMARY KEY (name))", &[]),
             session.query_unpaged("CREATE TABLE IF NOT EXISTS entity_register (id text, uid uuid, created timestamp, type text, PRIMARY KEY (id))", &[]),
-            session.query_unpaged("CREATE TABLE IF NOT EXISTS entity_data_bool (uid uuid, timestamp timestamp, data boolean, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)", &[]),
-            session.query_unpaged("CREATE TABLE IF NOT EXISTS entity_data_int (uid uuid, timestamp timestamp, data bigint, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)", &[]),
-            session.query_unpaged("CREATE TABLE IF NOT EXISTS entity_data_float (uid uuid, timestamp timestamp, data double, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)", &[]),
-            session.query_unpaged("CREATE TABLE IF NOT EXISTS entity_data_string (uid uuid, timestamp timestamp, data text, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)", &[]),
+            session.query_unpaged("CREATE TABLE IF NOT EXISTS entity_data (uid uuid, timestamp timestamp, data_bool boolean, data_int bigint, data_double double, data_string text, PRIMARY KEY ((uid), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC)", &[]),
         );
 
         info!("Tables created!");
 
         info!("Preparing db Queries ...");
 
-        let entity_data_add_str =
-            "INSERT INTO {} (uid, data, timestamp) VALUES (?, ?, toTimestamp(now()))";
         execute_db!(
             // INSERT
             session.prepare("INSERT INTO users (name, password_hash, disabled, uid, created) VALUES (?, ?, ?, uuid(), toTimestamp(now()))") => user_create_prepare,
             session.prepare("INSERT INTO entity_register (id, uid, type, created) VALUES (?, uuid(), ?, toTimestamp(now()))") => entity_create_prepare,
-            session.prepare(entity_data_add_str.replace("{}", "entity_data_bool")) => entity_data_bool_add_prepare,
-            session.prepare(entity_data_add_str.replace("{}", "entity_data_int")) => entity_data_int_add_prepare,
-            session.prepare(entity_data_add_str.replace("{}", "entity_data_float")) => entity_data_double_add_prepare,
-            session.prepare(entity_data_add_str.replace("{}", "entity_data_string")) => entity_data_string_add_prepare,
+            session.prepare("INSERT INTO entity_data (uid, data_bool, timestamp) VALUES (?, ?, toTimestamp(now()))") => entity_data_bool_add_prepare,
+            session.prepare("INSERT INTO entity_data (uid, data_int, timestamp) VALUES (?, ?, toTimestamp(now()))") => entity_data_int_add_prepare,
+            session.prepare("INSERT INTO entity_data (uid, data_double, timestamp) VALUES (?, ?, toTimestamp(now()))") => entity_data_double_add_prepare,
+            session.prepare("INSERT INTO entity_data (uid, data_string, timestamp) VALUES (?, ?, toTimestamp(now()))") => entity_data_string_add_prepare,
             // SELECT
-            session.prepare("SELECT name, password_hash, uid FROM users WHERE name = ?") => user_get_prepare,
+            session.prepare("SELECT name, password_hash FROM users WHERE name = ?") => user_get_prepare,
             session.prepare("SELECT uid, type FROM entity_register WHERE id = ?") => entity_get_uid_type_prepare,
             session.prepare("SELECT uid FROM entity_register WHERE id = ?") => entity_get_uid_prepare,
         );
@@ -107,6 +113,37 @@ impl Database {
             entity_get_uid_type_prepare,
             entity_get_uid_prepare,
         })
+    }
+
+    #[tracing::instrument(level = "trace", skip(self, user, password, disabled))]
+    pub async fn create_user(
+        &self,
+        user: &str,
+        password: &str,
+        disabled: bool,
+    ) -> Result<(), Status> {
+        let password_hash = generate_pwd_hash(password)?;
+
+        resolve_error!(
+            self.session
+                .execute_unpaged(&self.user_create_prepare, (user, password_hash, disabled),)
+                .await
+        )?;
+
+        Ok(())
+    }
+
+    pub async fn get_user(&self, user: &str) -> Result<User, Status> {
+        let result = resolve_error!(
+            self.session
+                .execute_unpaged(&self.user_get_prepare, (&user,))
+                .await
+        )?;
+        let result = resolve_error!(result.into_rows_result())?;
+
+        let data = resolve_error!(result.single_row::<User>())?;
+
+        Ok(data)
     }
 
     #[tracing::instrument(level = "trace", skip(self))]
@@ -132,6 +169,7 @@ impl Database {
         Err(Status::invalid_argument("Entity already exists")) // TODO: Replace with proper error handling
     }
 
+    #[tracing::instrument(level = "trace", skip(self, id, value))]
     pub async fn add_entity_data(
         &self,
         id: &str,
