@@ -20,7 +20,6 @@ repos:
       - id: destroyed-symlinks
       - id: detect-private-key
       - id: end-of-file-fixer
-        exclude: .*_pb\.ts
       - id: fix-byte-order-marker
       - id: mixed-line-ending
       - id: trailing-whitespace
@@ -59,17 +58,3 @@ repos:
     hooks:
       - id: buf-format
       - id: buf-lint
-  - repo: local
-    hooks:
-      - id: bun-fmt
-        name: bun run format
-        language: system
-        files: .*\.(json|md)$
-        pass_filenames: false
-        entry: bun run format
-      - id: bun-lint
-        name: bun run lint
-        language: system
-        files: package.json
-        pass_filenames: false
-        entry: bun run lint

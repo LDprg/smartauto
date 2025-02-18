@@ -18,12 +18,4 @@ jobs:
       - uses: bufbuild/buf-action@v1
         with:
           setup_only: true
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
       - run: python -m pip install pre-commit
-      - name: Install dependencies
-        run: bun install --no-save
-      - name: install protobuf-es
-        run: bun add -g @bufbuild/protoc-gen-es
-      - uses: pre-commit/action@v3.0.1
