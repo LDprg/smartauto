@@ -101,6 +101,37 @@ impl Database {
 
         info!("Queries prepared!");
 
+        info!("Check users");
+
+        let result = session
+            .query_unpaged("SELECT COUNT(*) FROM users;", &[])
+            .await?
+            .into_rows_result()?
+            .single_row::<(i64,)>()?;
+        let user_cnt = result.0;
+
+        if user_cnt == 0 {
+            info!("No users found creating default ones!");
+
+            let user = env::var(ENV_DEFAULT_USER).unwrap_or_else(|_| "admin".to_string());
+            let password =
+                env::var(ENV_DEFAULT_PASSWORD).unwrap_or_else(|_| "smartauto".to_string());
+
+            let password_hash = generate_pwd_hash(&password).map_err(|_| {
+                Box::<dyn std::error::Error>::from("Generate password_hash failed!")
+            })?;
+
+            session
+                .execute_unpaged(&user_create_prepare, (user, password_hash, false))
+                .await?;
+
+            info!("Default user has been created, change the password as soon as possible!");
+        } else {
+            info!("Found {} users", user_cnt);
+        }
+
+        info!("Users checked!");
+
         Ok(Self {
             session,
             user_create_prepare,

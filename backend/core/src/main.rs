@@ -13,6 +13,7 @@ mod services;
 mod smartauto;
 mod util;
 
+use constants::*;
 use services::*;
 use tracing::level_filters::LevelFilter;
 use tracing::*;
@@ -34,10 +35,10 @@ macro_rules! new_service {
 #[tracing::instrument(level = "trace", skip())]
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = env::var("HOST_URI")
+    let addr = env::var(ENV_HOST_URI)
         .unwrap_or_else(|_| "127.0.0.1:3000".to_string())
         .parse()?;
-    let uri = env::var("SCYLLA_URI").unwrap_or_else(|_| "127.0.0.1:9042".to_string());
+    let uri = env::var(ENV_SCYLLA_URI).unwrap_or_else(|_| "127.0.0.1:9042".to_string());
 
     let filter_project =
         filter::filter_fn(|metadata| metadata.target().starts_with(module_path!()));
@@ -71,7 +72,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let admin = admin::AdminImpl::new(database.clone());
     let admin = new_service!(admin::AdminServiceServer::new(admin));
-    // let admin = InterceptedService::new(admin, auth::check_auth);
+    let admin = InterceptedService::new(admin, authentication::check_auth);
 
     let entity = entity::EntityImpl::new(database.clone());
     let entity = new_service!(entity::EntityServiceServer::new(entity));
