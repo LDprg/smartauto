@@ -122,9 +122,10 @@ impl Database {
         if user_cnt == 0 {
             info!("No users found creating default ones!");
 
-            let user = env::var(ENV_DEFAULT_USER).unwrap_or_else(|_| "admin".to_string());
-            let password =
-                env::var(ENV_DEFAULT_PASSWORD).unwrap_or_else(|_| "smartauto".to_string());
+            let user =
+                env::var(ENV_DEFAULT_USER).unwrap_or_else(|_| DEFAULT_DEFAULT_USER.to_string());
+            let password = env::var(ENV_DEFAULT_PASSWORD)
+                .unwrap_or_else(|_| DEFAULT_DEFAULT_PASSWORD.to_string());
 
             let password_hash = generate_pwd_hash(&password).map_err(|_| {
                 Box::<dyn std::error::Error>::from("Generate password_hash failed!")

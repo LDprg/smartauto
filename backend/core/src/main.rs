@@ -36,9 +36,9 @@ macro_rules! new_service {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let addr = env::var(ENV_HOST_URI)
-        .unwrap_or_else(|_| "127.0.0.1:3000".to_string())
+        .unwrap_or_else(|_| DEFAULT_HOST_URI.to_string())
         .parse()?;
-    let uri = env::var(ENV_SCYLLA_URI).unwrap_or_else(|_| "127.0.0.1:9042".to_string());
+    let uri = env::var(ENV_SCYLLA_URI).unwrap_or_else(|_| DEFAULT_SCYLLA_URI.to_string());
 
     let filter_project =
         filter::filter_fn(|metadata| metadata.target().starts_with(module_path!()));
