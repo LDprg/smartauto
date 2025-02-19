@@ -42,7 +42,12 @@ pub struct Database {
     user_get_prepare: PreparedStatement,
 
     entity_get_uid_type_prepare: PreparedStatement,
-    entity_get_uid_prepare: PreparedStatement,
+    entity_get_count_prepare: PreparedStatement,
+
+    entity_data_bool_get_count_prepare: PreparedStatement,
+    entity_data_int_get_count_prepare: PreparedStatement,
+    entity_data_double_get_count_prepare: PreparedStatement,
+    entity_data_string_get_count_prepare: PreparedStatement,
 }
 
 #[derive(DeserializeRow)]
@@ -96,7 +101,11 @@ impl Database {
             // SELECT
             session.prepare("SELECT name, password_hash FROM users WHERE name = ?") => user_get_prepare,
             session.prepare("SELECT uid, type FROM entity_register WHERE id = ?") => entity_get_uid_type_prepare,
-            session.prepare("SELECT uid FROM entity_register WHERE id = ?") => entity_get_uid_prepare,
+            session.prepare("SELECT COUNT(*) FROM entity_register WHERE id = ?") => entity_get_count_prepare,
+            session.prepare("SELECT data_bool FROM entity_data WHERE uid = ?") => entity_data_bool_get_count_prepare,
+            session.prepare("SELECT data_int FROM entity_data WHERE uid = ?") => entity_data_int_get_count_prepare,
+            session.prepare("SELECT data_double FROM entity_data WHERE uid = ?") => entity_data_double_get_count_prepare,
+            session.prepare("SELECT data_string FROM entity_data WHERE uid = ?") => entity_data_string_get_count_prepare,
         );
 
         info!("Queries prepared!");
@@ -134,15 +143,25 @@ impl Database {
 
         Ok(Self {
             session,
+
             user_create_prepare,
+
             entity_create_prepare,
+
             entity_data_bool_add_prepare,
             entity_data_int_add_prepare,
             entity_data_double_add_prepare,
             entity_data_string_add_prepare,
+
             user_get_prepare,
+
             entity_get_uid_type_prepare,
-            entity_get_uid_prepare,
+            entity_get_count_prepare,
+
+            entity_data_bool_get_count_prepare,
+            entity_data_int_get_count_prepare,
+            entity_data_double_get_count_prepare,
+            entity_data_string_get_count_prepare,
         })
     }
 
@@ -179,16 +198,15 @@ impl Database {
 
     #[tracing::instrument(level = "trace", skip(self))]
     pub async fn create_entity(&self, id: &str, r#type: &str) -> Result<(), Status> {
-        let exist = resolve_error!(
+        let count = resolve_error!(
             self.session
-                .execute_unpaged(&self.entity_get_uid_prepare, (id,))
+                .execute_unpaged(&self.entity_get_count_prepare, (id,))
                 .await
         )?;
-        let exist = resolve_error!(exist.into_rows_result())?;
-        let mut exist = resolve_error!(exist.rows::<(Uuid,)>())?;
-        let exist = resolve_error!(exist.next().transpose())?;
+        let count = resolve_error!(count.into_rows_result())?;
+        let count = resolve_error!(count.single_row::<(i64,)>())?;
 
-        if exist.is_none() {
+        if count.0 == 0 {
             resolve_error!(
                 self.session
                     .execute_unpaged(&self.entity_create_prepare, (id, r#type))
@@ -213,53 +231,92 @@ impl Database {
         )?;
 
         let info = resolve_error!(info.into_rows_result())?;
-        let mut info = resolve_error!(info.rows::<(Uuid, &str)>())?;
-        let info = resolve_error!(info.next().transpose())?;
+        let info = resolve_error!(info.single_row::<(Uuid, &str)>())?;
 
-        if let Some(info) = info {
-            let uid = info.0;
-            if let Some(r#type) = EntityType::from_str_name(info.1) {
-                if value.as_type() != r#type {
-                    return Err(Status::invalid_argument(format!(
-                        "Value has wrong type! Should be: {}",
-                        info.1
-                    ))); // TODO: Replace with proper error handling
-                }
-
-                match value {
-                    entity_value::Value::Bool(value) => {
-                        resolve_error!(
-                            self.session
-                                .execute_unpaged(&self.entity_data_bool_add_prepare, (uid, value))
-                                .await
-                        )?;
-                    }
-                    entity_value::Value::Int(value) => {
-                        resolve_error!(
-                            self.session
-                                .execute_unpaged(&self.entity_data_int_add_prepare, (uid, value))
-                                .await
-                        )?;
-                    }
-                    entity_value::Value::Double(value) => {
-                        resolve_error!(
-                            self.session
-                                .execute_unpaged(&self.entity_data_double_add_prepare, (uid, value))
-                                .await
-                        )?;
-                    }
-                    entity_value::Value::String(value) => {
-                        resolve_error!(
-                            self.session
-                                .execute_unpaged(&self.entity_data_string_add_prepare, (uid, value))
-                                .await
-                        )?;
-                    }
-                }
-                return Ok(());
+        let uid = info.0;
+        if let Some(r#type) = EntityType::from_str_name(info.1) {
+            if value.as_type() != r#type {
+                return Err(Status::invalid_argument(format!(
+                    "Value has wrong type! Should be: {}",
+                    info.1
+                ))); // TODO: Replace with proper error handling
             }
-            return Err(Status::invalid_argument("Entity already exists")); // TODO: Replace with proper error handling
+
+            match value {
+                entity_value::Value::Bool(value) => {
+                    resolve_error!(
+                        self.session
+                            .execute_unpaged(&self.entity_data_bool_add_prepare, (uid, value))
+                            .await
+                    )?;
+                }
+                entity_value::Value::Int(value) => {
+                    resolve_error!(
+                        self.session
+                            .execute_unpaged(&self.entity_data_int_add_prepare, (uid, value))
+                            .await
+                    )?;
+                }
+                entity_value::Value::Double(value) => {
+                    resolve_error!(
+                        self.session
+                            .execute_unpaged(&self.entity_data_double_add_prepare, (uid, value))
+                            .await
+                    )?;
+                }
+                entity_value::Value::String(value) => {
+                    resolve_error!(
+                        self.session
+                            .execute_unpaged(&self.entity_data_string_add_prepare, (uid, value))
+                            .await
+                    )?;
+                }
+            }
+            return Ok(());
         }
-        Err(Status::invalid_argument("Invalid Entity type!")) // TODO: Replace with proper error handling
+        Err(Status::invalid_argument("Invalid entity type")) // TODO: Replace with proper error handling
+    }
+
+    pub async fn get_entity_data(&self, id: &str) -> Result<entity_value::Value, Status> {
+        let info = resolve_error!(
+            self.session
+                .execute_unpaged(&self.entity_get_uid_type_prepare, (id,))
+                .await
+        )?;
+
+        let info = resolve_error!(info.into_rows_result())?;
+        let (uid, r#type) = resolve_error!(info.single_row::<(Uuid, &str)>())?;
+
+        if let Some(r#type) = EntityType::from_str_name(r#type) {
+            let statement = match r#type {
+                EntityType::Bool => &self.entity_data_bool_get_count_prepare,
+                EntityType::Int => &self.entity_data_int_get_count_prepare,
+                EntityType::Double => &self.entity_data_double_get_count_prepare,
+                EntityType::String => &self.entity_data_string_get_count_prepare,
+                EntityType::Unspecified => return Err(Status::internal("Database corruped!")),
+            };
+
+            let data = resolve_error!(self.session.execute_unpaged(statement, (uid,)).await)?;
+            let data = resolve_error!(data.into_rows_result())?;
+            let value = match r#type {
+                EntityType::Bool => {
+                    entity_value::Value::Bool(resolve_error!(data.first_row::<(bool,)>())?.0)
+                }
+                EntityType::Int => {
+                    entity_value::Value::Int(resolve_error!(data.first_row::<(i64,)>())?.0)
+                }
+                EntityType::Double => {
+                    entity_value::Value::Double(resolve_error!(data.first_row::<(f64,)>())?.0)
+                }
+                EntityType::String => {
+                    entity_value::Value::String(resolve_error!(data.first_row::<(String,)>())?.0)
+                }
+                EntityType::Unspecified => return Err(Status::internal("Database corruped!")),
+            };
+
+            return Ok(value);
+        }
+        error!("Database corruped!");
+        Err(Status::internal("Database corruped")) // TODO: Replace with proper error handling
     }
 }

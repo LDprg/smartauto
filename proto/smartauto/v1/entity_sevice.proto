@@ -8,6 +8,7 @@ service EntityService {
   rpc CreateEntity(CreateEntityRequest) returns (CreateEntityResponse);
   rpc UpdateEntity(UpdateEntityRequest) returns (UpdateEntityResponse);
   rpc GetEntity(GetEntityRequest) returns (GetEntityResponse);
+  rpc GetEntityStream(stream GetEntityStreamRequest) returns (stream GetEntityStreamResponse);
 }
 
 message CreateEntityRequest {
@@ -30,4 +31,12 @@ message GetEntityRequest {
 
 message GetEntityResponse {
   EntityValue value = 1;
+}
+message GetEntityStreamRequest {
+  EntityID id = 1;
+}
+
+message GetEntityStreamResponse {
+  EntityID id = 1;
+  EntityValue value = 2;
 }
