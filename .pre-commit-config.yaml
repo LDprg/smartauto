@@ -54,7 +54,7 @@ repos:
       - id: vale
         exclude: (.*_pb\.ts)|(LICENSE.md)
   - repo: https://github.com/bufbuild/buf
-    rev: v1.50.0
+    rev: v1.50.1
     hooks:
       - id: buf-format
       - id: buf-lint
